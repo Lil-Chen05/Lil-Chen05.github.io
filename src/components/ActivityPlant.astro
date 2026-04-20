@@ -1,0 +1,252 @@
+---
+import { renderPlantSVG } from "../lib/plant";
+import { tendedLabel, daysSince } from "../lib/activity";
+
+interface Props {
+  score: number;
+  lastActivity: Date | null;
+}
+
+const { score, lastActivity } = Astro.props;
+const lightSvg = renderPlantSVG(score, false);
+const darkSvg = renderPlantSVG(score, true);
+const tended = tendedLabel(daysSince(lastActivity));
+---
+
+<aside class="plant-aside" aria-hidden="true">
+  <div class="windowsill-wrap">
+    <div class="plant-card">
+      <div class="plant-holder plant-light" set:html={lightSvg} />
+      <div class="plant-holder plant-dark" set:html={darkSvg} />
+    </div>
+    <button
+      type="button"
+      class="help-dot"
+      aria-label="About this plant"
+      aria-expanded="false"
+      data-plant-help
+    >
+      ?
+    </button>
+    <div class="help-popover" role="dialog" aria-label="About the activity plant" hidden>
+      <h5>About this plant</h5>
+      <p>
+        Its health tracks how recently I've posted notes, blog entries, or pushed
+        updates to projects. Full bloom means I've been active and it wilts when I
+        go quiet. Inspired by my Sustainify project!
+      </p>
+      <p class="fine">Updated daily · derived from git history.</p>
+    </div>
+  </div>
+  <div class="plant-caption">
+    <span class="big">My Plant's health depends on my activity.</span>
+    <span class="sub">{tended}</span>
+  </div>
+</aside>
+
+<style>
+  .plant-aside {
+    width: 100%;
+    font-family: var(--font-sans);
+  }
+  .windowsill-wrap {
+    position: relative;
+    width: 100%;
+  }
+  .plant-card {
+    position: relative;
+    height: 420px;
+    padding: 24px 14px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .plant-card::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 14px;
+    height: 1px;
+    background: var(--border);
+  }
+  .plant-holder {
+    width: 90%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .plant-holder :global(svg) {
+    width: 90%;
+    height: 100%;
+    max-height: 100%;
+    display: block;
+    overflow: hidden !important;
+  }
+  .plant-dark {
+    display: none;
+  }
+  :global(:root[data-theme="dark"]) .plant-light {
+    display: none;
+  }
+  :global(:root[data-theme="dark"]) .plant-dark {
+    display: flex;
+  }
+
+  .help-dot {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    border-radius: 50%;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 3;
+    transition:
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .help-dot:hover,
+  .help-dot[aria-expanded="true"] {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .help-popover {
+    position: absolute;
+    top: 8px;
+    right: 40px;
+    width: 230px;
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow:
+      0 10px 24px -8px rgba(0, 0, 0, 0.15),
+      0 2px 6px -2px rgba(0, 0, 0, 0.08);
+    text-align: left;
+    z-index: 5;
+    font-family: var(--font-serif);
+    opacity: 0;
+    transform: translateX(4px);
+    pointer-events: none;
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+  .help-popover[data-open="true"] {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .help-popover::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: -6px;
+    width: 10px;
+    height: 10px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    transform: rotate(45deg);
+  }
+  .help-popover h5 {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 8px;
+    font-weight: 600;
+  }
+  .help-popover p {
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin: 0 0 8px;
+    color: var(--text);
+  }
+  .help-popover p.fine {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .plant-caption {
+    padding: 0 8px;
+    margin-top: 14px;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .plant-caption .big {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 13.5px;
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .plant-caption .sub {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-plant-help]").forEach((btn) => {
+    const pop = btn.parentElement?.querySelector<HTMLElement>(".help-popover");
+    if (!pop) return;
+
+    const close = () => {
+      pop.dataset.open = "false";
+      pop.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    };
+    const open = () => {
+      pop.hidden = false;
+      requestAnimationFrame(() => {
+        pop.dataset.open = "true";
+      });
+      btn.setAttribute("aria-expanded", "true");
+    };
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (pop.dataset.open === "true") close();
+      else open();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (pop.dataset.open !== "true") return;
+      const target = e.target as Node;
+      if (!pop.contains(target) && target !== btn) close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && pop.dataset.open === "true") {
+        close();
+        btn.focus();
+      }
+    });
+  });
+</script>

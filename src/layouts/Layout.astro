@@ -7,9 +7,13 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  wide?: boolean;
 }
 
-const { title, description, noindex } = Astro.props;
+const { title, description, noindex, wide } = Astro.props;
+const mainClass = wide
+  ? "mx-auto w-full max-w-5xl flex-1 px-6 py-12"
+  : "mx-auto w-full max-w-prose flex-1 px-6 py-12";
 const pageTitle = title ? `${title} · Jerry Chen` : "Jerry Chen";
 const pageDesc =
   description ??
@@ -50,7 +54,7 @@ const ogImage = new URL("/og-default.svg", Astro.site).toString();
   </head>
   <body>
     <Nav />
-    <main class="mx-auto w-full max-w-prose flex-1 px-6 py-12">
+    <main class={mainClass}>
       <slot />
     </main>
     <Footer />

@@ -3,6 +3,8 @@ import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import NoteEntry from "../components/NoteEntry.astro";
+import ActivityPlant from "../components/ActivityPlant.astro";
+import { computeActivity } from "../lib/activity";
 
 const featuredProjects = (await getCollection("projects"))
   .filter((p) => p.data.featured)
@@ -12,9 +14,11 @@ const featuredProjects = (await getCollection("projects"))
 const recentNotes = (await getCollection("notes"))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 5);
+
+const { score, lastActivity } = await computeActivity();
 ---
 
-<Layout>
+<Layout wide>
   <section class="flex items-start gap-6 sm:gap-8">
     <img
       src="/images/jerry.jpg"
@@ -33,37 +37,68 @@ const recentNotes = (await getCollection("notes"))
     </div>
   </section>
 
-  <section class="mt-16">
-    <div class="flex items-baseline justify-between">
-      <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
-        Selected projects
-      </h2>
-      <a href="/projects" class="font-sans text-xs">All projects →</a>
-    </div>
-    <div class="mt-4">
-      {featuredProjects.map((p) => <ProjectCard project={p} />)}
-      {
-        featuredProjects.length === 0 && (
-          <p class="mt-6 text-muted">No featured projects yet.</p>
-        )
-      }
-    </div>
-  </section>
+  <div class="home-split mt-16">
+    <div class="home-main">
+      <section>
+        <div class="flex items-baseline justify-between">
+          <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
+            Selected projects
+          </h2>
+          <a href="/projects" class="font-sans text-xs">All projects →</a>
+        </div>
+        <div class="mt-4">
+          {featuredProjects.map((p) => <ProjectCard project={p} />)}
+          {
+            featuredProjects.length === 0 && (
+              <p class="mt-6 text-muted">No featured projects yet.</p>
+            )
+          }
+        </div>
+      </section>
 
-  <section class="mt-16">
-    <div class="flex items-baseline justify-between">
-      <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
-        Recent notes
-      </h2>
-      <a href="/notes" class="font-sans text-xs">All notes →</a>
+      <section class="mt-16">
+        <div class="flex items-baseline justify-between">
+          <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
+            Recent notes
+          </h2>
+          <a href="/notes" class="font-sans text-xs">All notes →</a>
+        </div>
+        <div class="mt-4">
+          {recentNotes.map((n) => <NoteEntry note={n} />)}
+          {
+            recentNotes.length === 0 && (
+              <p class="mt-6 text-muted">No notes yet.</p>
+            )
+          }
+        </div>
+      </section>
     </div>
-    <div class="mt-4">
-      {recentNotes.map((n) => <NoteEntry note={n} />)}
-      {
-        recentNotes.length === 0 && (
-          <p class="mt-6 text-muted">No notes yet.</p>
-        )
-      }
+
+    <div class="home-aside">
+      <ActivityPlant score={score} lastActivity={lastActivity} />
     </div>
-  </section>
+  </div>
 </Layout>
+
+<style>
+  .home-main {
+    min-width: 0;
+    max-width: 65ch;
+  }
+  .home-aside {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .home-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 260px;
+      gap: 48px;
+      align-items: start;
+    }
+    .home-aside {
+      display: block;
+      position: sticky;
+      top: 5rem;
+    }
+  }
+</style>
