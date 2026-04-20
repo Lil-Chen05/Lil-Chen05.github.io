@@ -1,0 +1,12 @@
+---
+interface Props {
+  tag: string;
+}
+
+const { tag } = Astro.props;
+const label = tag.toUpperCase();
+---
+
+<span class="rounded border border-border px-1.5 py-0.5 text-[10px] tracking-wider text-muted">
+  {label}
+</span>

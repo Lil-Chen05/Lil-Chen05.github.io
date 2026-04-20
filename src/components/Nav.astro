@@ -1,0 +1,31 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+
+const links = [
+  { href: "/about", label: "About" },
+  { href: "/projects", label: "Projects" },
+  { href: "/notes", label: "Notes" },
+];
+---
+
+<nav class="border-b border-border">
+  <div class="mx-auto flex max-w-prose items-center justify-between px-6 py-5">
+    <a href="/" class="font-sans font-semibold text-text no-underline">Jerry Chen</a>
+    <div class="flex items-center gap-5 font-sans text-sm">
+      {
+        links.map(({ href, label }) => (
+          <a href={href} class="text-text no-underline hover:text-accent">
+            {label}
+          </a>
+        ))
+      }
+      <ThemeToggle />
+    </div>
+  </div>
+</nav>
+
+<style>
+  nav a.no-underline {
+    text-decoration: none;
+  }
+</style>

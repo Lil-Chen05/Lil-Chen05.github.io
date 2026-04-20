@@ -1,0 +1,46 @@
+---
+import { getCollection, render } from "astro:content";
+import PostLayout from "../../components/PostLayout.astro";
+import TagPill from "../../components/TagPill.astro";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { title, description, date, tags, links } = project.data;
+const { Content } = await render(project);
+---
+
+<PostLayout
+  title={title}
+  description={description}
+  date={date}
+  eyebrow="Project"
+  backHref="/projects"
+  backLabel="All projects"
+>
+  <div class="mb-6 flex flex-wrap gap-1.5 font-sans">
+    {tags.map((t) => <TagPill tag={t} />)}
+  </div>
+
+  <p class="text-muted">{description}</p>
+
+  {
+    links && (
+      <p class="mt-4 font-sans text-sm">
+        {links.github && <a href={links.github}>GitHub</a>}
+        {links.github && links.demo && <span class="mx-2">·</span>}
+        {links.demo && <a href={links.demo}>Demo</a>}
+        {(links.github || links.demo) && links.paper && <span class="mx-2">·</span>}
+        {links.paper && <a href={links.paper}>Paper</a>}
+      </p>
+    )
+  }
+
+  <Content />
+</PostLayout>

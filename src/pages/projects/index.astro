@@ -1,0 +1,112 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+const tagDefs = [
+  { value: "all", label: "All" },
+  { value: "swe", label: "SWE" },
+  { value: "ai", label: "AI" },
+  { value: "nlp", label: "NLP" },
+];
+---
+
+<Layout
+  title="Projects"
+  description="Projects across software engineering, AI, and NLP research."
+>
+  <h1 class="text-3xl">Projects</h1>
+  <p class="mt-3 text-muted">
+    Work across software engineering, AI development, and NLP/LLM research.
+  </p>
+
+  <div
+    id="filter-bar"
+    role="toolbar"
+    aria-label="Filter projects by tag"
+    class="mt-8 flex flex-wrap gap-2 font-sans text-sm"
+  >
+    {
+      tagDefs.map((t, i) => (
+        <button
+          type="button"
+          data-filter={t.value}
+          aria-pressed={i === 0 ? "true" : "false"}
+          class="filter-btn"
+        >
+          {t.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <div id="project-list" class="mt-6">
+    {
+      projects.map((p) => (
+        <div data-tags={p.data.tags.join(" ")}>
+          <ProjectCard project={p} />
+        </div>
+      ))
+    }
+  </div>
+
+  <p id="empty-state" class="mt-10 text-muted" hidden>
+    No projects in this category yet.
+  </p>
+</Layout>
+
+<style>
+  .filter-btn {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.12s ease, border-color 0.12s ease;
+  }
+  .filter-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .filter-btn[aria-pressed="true"] {
+    color: var(--bg);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const bar = document.getElementById("filter-bar");
+    const list = document.getElementById("project-list");
+    const empty = document.getElementById("empty-state");
+    if (!bar || !list || !empty) return;
+    const items = Array.from(list.children);
+
+    const apply = (filter) => {
+      let shown = 0;
+      items.forEach((el) => {
+        const tags = (el.getAttribute("data-tags") || "").split(/\s+/);
+        const match = filter === "all" || tags.includes(filter);
+        el.hidden = !match;
+        if (match) shown++;
+      });
+      empty.hidden = shown !== 0;
+    };
+
+    bar.querySelectorAll("[data-filter]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const filter = btn.getAttribute("data-filter") || "all";
+        bar.querySelectorAll("[data-filter]").forEach((b) =>
+          b.setAttribute("aria-pressed", b === btn ? "true" : "false")
+        );
+        apply(filter);
+      });
+    });
+  })();
+</script>

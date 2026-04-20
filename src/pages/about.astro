@@ -1,0 +1,82 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="About"
+  description="About Jerry Chen — computer science at McGill, working across SWE, AI, and NLP research."
+>
+  <h1 class="text-3xl">About</h1>
+
+  <section class="mt-8 flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
+    <figure
+      class="shrink-0 overflow-hidden border border-border bg-surface"
+      style="width: 180px; aspect-ratio: 4 / 5;"
+    >
+      <img
+        src="/images/jerry.jpg"
+        alt="Jerry Chen"
+        width="180"
+        height="225"
+        class="h-full w-full object-cover"
+      />
+    </figure>
+
+    <div class="space-y-4">
+      <p>
+        I'm Jerry, a computer science student at McGill University. This site
+        is where I keep track of what I'm building, reading, and thinking about
+        — it started because I wanted a quieter place than LinkedIn to document
+        the work.
+      </p>
+      <p>
+        <em>Replace this paragraph with a more personal bio during the content
+        seeding step.</em>
+      </p>
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
+      What I work on
+    </h2>
+    <div class="mt-4 space-y-4">
+      <p>
+        My work spans three loose tracks. <strong>Software engineering</strong>{" "}
+        — typical full-stack and systems projects, the kind of work you do to
+        ship things that people actually use.{" "}
+        <strong>AI development</strong> — building with LLMs and foundation
+        models, applied rather than theoretical.{" "}
+        <strong>NLP / LLM research</strong> — a more academic slice, closer to
+        understanding how these models work than shipping features with them.
+      </p>
+      <p>
+        Projects on this site are tagged
+        <a href="/projects?tag=swe">SWE</a>,
+        <a href="/projects?tag=ai">AI</a>, or
+        <a href="/projects?tag=nlp">NLP</a> so you can filter to the track you
+        care about.
+      </p>
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
+      Elsewhere
+    </h2>
+    <ul class="mt-4 space-y-2 font-sans text-sm">
+      <li>
+        <span class="text-muted">Email</span> ·{" "}
+        <a href="mailto:jerry.chen@mail.mcgill.ca">jerry.chen@mail.mcgill.ca</a>
+      </li>
+      <li>
+        <span class="text-muted">GitHub</span> ·{" "}
+        <a href="https://github.com/Lil-Chen05">github.com/Lil-Chen05</a>
+      </li>
+    </ul>
+    <p class="mt-4 text-sm text-muted">
+      Add LinkedIn or any other link during the content seeding step if you
+      want it here.
+    </p>
+  </section>
+</Layout>

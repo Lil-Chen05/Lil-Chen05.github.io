@@ -1,0 +1,48 @@
+---
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const pageTitle = title ? `${title} · Jerry Chen` : "Jerry Chen";
+const pageDesc =
+  description ?? "Jerry Chen — personal site, notes, and projects.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDesc} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:type" content="website" />
+    <meta name="generator" content={Astro.generator} />
+
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem("theme");
+        const prefers = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        document.documentElement.dataset.theme =
+          stored ?? (prefers ? "dark" : "light");
+      })();
+    </script>
+  </head>
+  <body>
+    <Nav />
+    <main class="mx-auto w-full max-w-prose flex-1 px-6 py-12">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
