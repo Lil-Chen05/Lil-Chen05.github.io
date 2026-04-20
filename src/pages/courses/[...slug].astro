@@ -1,0 +1,30 @@
+---
+import { getCollection, render } from "astro:content";
+import PostLayout from "../../components/PostLayout.astro";
+
+export async function getStaticPaths() {
+  const courses = await getCollection("courses");
+  return courses.map((course) => ({
+    params: { slug: course.id },
+    props: { course },
+  }));
+}
+
+const { course } = Astro.props;
+const { code, title, term, rating } = course.data;
+const { Content } = await render(course);
+
+const meta = [term, rating != null ? `${rating}/5` : null]
+  .filter(Boolean)
+  .join(" · ");
+---
+
+<PostLayout
+  title={title}
+  eyebrow={code}
+  meta={meta}
+  backHref="/courses"
+  backLabel="All courses"
+>
+  <Content />
+</PostLayout>

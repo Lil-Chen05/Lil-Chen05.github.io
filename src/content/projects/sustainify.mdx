@@ -1,7 +1,7 @@
 ---
-title: "Sustainify — Sustainability-Focused Web Application"
+title: "Sustainify — Sustainability scores for online shopping"
 date: 2025-01-18
-description: "Built a software project focused on helping users make more sustainable choices through a practical, product-oriented web experience."
+description: "A framework-less Chrome extension that scores products on sustainability as you shop, suggests greener alternatives, and tracks your footprint over time."
 tags: ["swe", "ai"]
 featured: false
 links:
@@ -9,8 +9,20 @@ links:
   devpost: "https://devpost.com/software/sustainify-thnj8v"
 ---
 
-Sustainify was a project where I focused on building software around a real-world problem rather than just technical novelty. The goal was to make sustainability more actionable for users by turning abstract concerns into something interactive, understandable, and useful inside a web app.
+Sustainify is a Chrome extension that scans a product page while you're shopping and returns a sustainability score with a short justification. The score is built from signals inspired by the ESG framework — material composition, transport emissions, ethical sourcing, community approval — and sits alongside a small list of greener alternatives surfaced from sustainability-focused subreddits.
 
-From a portfolio perspective, I would position Sustainify as a product-thinking project: one where I had to balance usability, scope, and implementation speed. I worked through how to present information clearly, shape the user flow, and craft an experience that felt practical instead of purely conceptual. That made it a good exercise in translating an idea into something people could actually navigate and evaluate.
+Beyond scoring individual products, the extension keeps a personal Stash of things you've bought. Each item contributes to an overall Sustainify Score broken down by category, so you can see where your footprint is heaviest. A small plant on your dashboard grows or wilts with your score — a light gamified layer to make the feedback loop feel less clinical.
 
-What I learned from Sustainify was how important framing is in product development. Even when the underlying idea is strong, the project only lands if the interface makes the value obvious quickly. I also learned how to make tradeoffs under time pressure and how to ship a coherent MVP instead of overbuilding.
+## How it's built
+
+The frontend is framework-less — plain JavaScript, HTML, and CSS — which made it harder to build but left us with a light, modular extension that's easy to move around. We used `chrome.storage` for persistence and syncing, so flipping themes or adding to your Stash in one surface updates every other surface instantly. The backend is three Gumloop workflows: one for detecting product pages, one for scoring, one for pulling alternatives. We call them concurrently to keep the user-visible latency low.
+
+## What I worked through
+
+The hardest call was the alternative-products feature. Searching the open web was slow and often drifted off-topic; maintaining a manual database didn't scale to the breadth of products we wanted to cover. We landed on Reddit as a stopgap — constraining the AI to sustainability-minded subreddits cut hallucinated links and kept suggestions grounded.
+
+The other thread was being deliberate about *when* to use an LLM. With abundant AI access it's easy to delegate everything, but that's both slow and — ironically, given the project — wasteful. We kept pushing logic back into plain JS where we could (e.g. a DFS over the page DOM to extract text before any AI call), and only reached for LLMs where structured reasoning was actually needed.
+
+## What's next
+
+The open problem is giving sustainability scores to *every* product online in a way that's defensible. ESG plus our own research got us to a reasonable estimate, but there's no canonical metric here — the next step would be talking to people who work on this professionally and tightening the methodology before scaling further.

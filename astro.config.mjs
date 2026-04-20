@@ -8,7 +8,13 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://lil-chen05.github.io',
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    sitemap({
+      filter: (page) =>
+        !page.includes("/blog") && !page.includes("/life"),
+    }),
+  ],
 
   vite: {
     plugins: [tailwindcss()]
