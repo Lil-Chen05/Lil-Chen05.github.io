@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
-import NoteCard from "../../components/NoteCard.astro";
+import NoteEntry from "../../components/NoteEntry.astro";
 
 const notes = (await getCollection("notes")).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime()
@@ -19,7 +19,7 @@ const notes = (await getCollection("notes")).sort(
   </p>
 
   <div class="mt-8">
-    {notes.map((n) => <NoteCard note={n} />)}
+    {notes.map((n) => <NoteEntry note={n} />)}
     {
       notes.length === 0 && (
         <p class="mt-6 text-muted">Nothing yet. Check back later.</p>

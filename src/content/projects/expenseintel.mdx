@@ -1,0 +1,19 @@
+---
+title: "ExpenseIntel — AI Expense Intelligence Platform for SMB Corporate Cards"
+date: 2026-04-01
+description: "Built an AI-powered expense analysis platform that turns transaction data into natural-language insights, compliance checks, approval flows, and automated reports."
+tags: ["swe", "ai", "nlp"]
+featured: true
+links:
+  github: "https://github.com/Lil-Chen05/BRIM-ExI"
+  demo: "https://dpbarry.github.io/BRIM-ExI/#/talk-to-data"
+  devpost: "https://devpost.com/software/expenseintel"
+---
+
+ExpenseIntel is a full-stack AI expense intelligence platform I built for SMB corporate card workflows. The idea was to go beyond static dashboards and create a system where users could ask questions about spending in natural language, get structured analysis back, flag compliance issues, and move directly into approval/reporting workflows.
+
+I built it with Node.js, Express, SQLite, and Resend, and one of the most interesting parts was the agentic analytics loop. I engineered a tool-based workflow where Claude could inspect the database schema, run constrained read-only SQL queries, and generate structured outputs like charts, summaries, and recommendations. That let the system answer business questions dynamically while still keeping the underlying data access controlled and explainable.
+
+I also implemented a production-style approval flow using tokenized single-use email links, plus incremental compliance scanning that prevented duplicate violations across about 4,200 transactions. To make the product feel realistic end to end, I designed synthetic data generation for a 10-employee corporate card environment and deployed the app on Cloudflare Workers and D1 with a single-origin architecture.
+
+This project stands out to me because it combined backend engineering, LLM workflow design, and product execution in one system. I learned a lot about constraining AI properly: the hard part is not just generating an answer, but building the surrounding infrastructure so the answer is grounded, auditable, and useful inside a business workflow. Winning the Brim Financial Challenge also gave me confidence that the project solved a problem other people immediately understood.

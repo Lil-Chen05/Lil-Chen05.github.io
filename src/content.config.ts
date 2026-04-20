@@ -26,12 +26,13 @@ const projects = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     description: z.string(),
-    tags: z.array(z.enum(["swe", "ai", "nlp"])),
+    tags: z.array(z.enum(["swe", "ai", "nlp", "school"])),
     featured: z.boolean().optional(),
     links: z
       .object({
         github: z.string().url().optional(),
         demo: z.string().url().optional(),
+        devpost: z.string().url().optional(),
         paper: z.string().url().optional(),
       })
       .optional(),

@@ -24,14 +24,15 @@ import Layout from "../layouts/Layout.astro";
 
     <div class="space-y-4">
       <p>
-        I'm Jerry, a computer science student at McGill University. This site
-        is where I keep track of what I'm building, reading, and thinking about
-        — it started because I wanted a quieter place than LinkedIn to document
-        the work.
+        I'm Jerry Chen — an undergraduate B.Sc. Honours Computer Science
+        student (minor in Statistics) at McGill University. I'm currently
+        figuring out where I want to put my time, somewhere between SWE and AI
+        internships, startup ideas, and NLP research.
       </p>
       <p>
-        <em>Replace this paragraph with a more personal bio during the content
-        seeding step.</em>
+        Outside of that, I'm into fashion and sustainability, and play with the
+        Inter Montreal soccer team. Ultimately I'm trying to find the
+        intersection between my skills and the things I actually care about.
       </p>
     </div>
   </section>
@@ -64,19 +65,79 @@ import Layout from "../layouts/Layout.astro";
     <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
       Elsewhere
     </h2>
-    <ul class="mt-4 space-y-2 font-sans text-sm">
+    <ul class="mt-4 flex gap-5">
       <li>
-        <span class="text-muted">Email</span> ·{" "}
-        <a href="mailto:jerry.chen@mail.mcgill.ca">jerry.chen@mail.mcgill.ca</a>
+        <a
+          href="mailto:ch.jerry23@gmail.com"
+          aria-label="Email Jerry"
+          class="icon-link"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+            <path d="m3 7 9 6 9-6"></path>
+          </svg>
+        </a>
       </li>
       <li>
-        <span class="text-muted">GitHub</span> ·{" "}
-        <a href="https://github.com/Lil-Chen05">github.com/Lil-Chen05</a>
+        <a
+          href="https://github.com/Lil-Chen05"
+          aria-label="GitHub profile"
+          class="icon-link"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.9.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.2.9 2.3v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3Z"
+            ></path>
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://www.linkedin.com/in/jerry-chen-63a248289/"
+          aria-label="LinkedIn profile"
+          class="icon-link"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2zM8 19H5V9h3v10zM6.5 7.7A1.75 1.75 0 1 1 6.5 4.2a1.75 1.75 0 0 1 0 3.5zM19 19h-3v-5.3c0-1.3-.5-2.2-1.7-2.2a1.9 1.9 0 0 0-1.7 1.2 2.4 2.4 0 0 0-.1.8V19h-3V9h3v1.3a3 3 0 0 1 2.7-1.5c2 0 3.4 1.3 3.4 4.1V19z"
+            ></path>
+          </svg>
+        </a>
       </li>
     </ul>
-    <p class="mt-4 text-sm text-muted">
-      Add LinkedIn or any other link during the content seeding step if you
-      want it here.
-    </p>
+
+    <style>
+      .icon-link {
+        display: inline-flex;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.12s ease;
+      }
+      .icon-link:hover {
+        color: var(--accent);
+      }
+    </style>
   </section>
 </Layout>

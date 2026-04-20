@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import NoteCard from "../components/NoteCard.astro";
+import NoteEntry from "../components/NoteEntry.astro";
 
 const featuredProjects = (await getCollection("projects"))
   .filter((p) => p.data.featured)
@@ -56,7 +56,7 @@ const recentNotes = (await getCollection("notes"))
       <a href="/notes" class="font-sans text-xs">All notes →</a>
     </div>
     <div class="mt-4">
-      {recentNotes.map((n) => <NoteCard note={n} />)}
+      {recentNotes.map((n) => <NoteEntry note={n} />)}
       {
         recentNotes.length === 0 && (
           <p class="mt-6 text-muted">No notes yet.</p>

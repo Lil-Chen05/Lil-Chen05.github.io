@@ -14,6 +14,17 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { title, description, date, tags, links } = project.data;
 const { Content } = await render(project);
+
+const linkEntries = links
+  ? (
+      [
+        ["github", "GitHub", links.github],
+        ["demo", "Demo", links.demo],
+        ["devpost", "Devpost", links.devpost],
+        ["paper", "Paper", links.paper],
+      ] as const
+    ).filter(([, , url]) => !!url)
+  : [];
 ---
 
 <PostLayout
@@ -31,13 +42,14 @@ const { Content } = await render(project);
   <p class="text-muted">{description}</p>
 
   {
-    links && (
+    linkEntries.length > 0 && (
       <p class="mt-4 font-sans text-sm">
-        {links.github && <a href={links.github}>GitHub</a>}
-        {links.github && links.demo && <span class="mx-2">·</span>}
-        {links.demo && <a href={links.demo}>Demo</a>}
-        {(links.github || links.demo) && links.paper && <span class="mx-2">·</span>}
-        {links.paper && <a href={links.paper}>Paper</a>}
+        {linkEntries.map(([key, label, url], i) => (
+          <>
+            {i > 0 && <span class="mx-2">·</span>}
+            <a href={url}>{label}</a>
+          </>
+        ))}
       </p>
     )
   }
