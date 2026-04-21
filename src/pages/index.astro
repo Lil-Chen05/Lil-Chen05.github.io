@@ -1,8 +1,8 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import NoteEntry from "../components/NoteEntry.astro";
+import FeedEntry from "../components/FeedEntry.astro";
 import ActivityPlant from "../components/ActivityPlant.astro";
 import SectionLabel from "../components/SectionLabel.astro";
 import { computeActivity } from "../lib/activity";
@@ -12,8 +12,23 @@ const featuredProjects = (await getCollection("projects"))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
-const recentNotes = (await getCollection("notes"))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+const rawNotes = await getCollection("notes");
+const noteItems = await Promise.all(
+  rawNotes.map(async (n) => {
+    const { Content } = await render(n);
+    return { kind: "note" as const, entry: n, Content };
+  })
+);
+const blogItems = (await getCollection("blog")).map((p) => ({
+  kind: "blog" as const,
+  entry: p,
+}));
+const recentFeed = [...noteItems, ...blogItems]
+  .sort((a, b) => {
+    const d = b.entry.data.date.getTime() - a.entry.data.date.getTime();
+    if (d !== 0) return d;
+    return a.entry.id.localeCompare(b.entry.id);
+  })
   .slice(0, 5);
 
 const { score, lastActivity } = await computeActivity();
@@ -88,14 +103,27 @@ const nowMonth = new Date().toLocaleDateString("en-US", { month: "long" });
 
   <section class="mt-16">
     <div class="row-head">
-      <SectionLabel>Recent notes</SectionLabel>
-      <a href="/notes" class="row-head-link">All notes →</a>
+      <SectionLabel>Recent from the feed</SectionLabel>
+      <a href="/feed" class="row-head-link">Open feed →</a>
     </div>
     <div>
-      {recentNotes.map((n) => <NoteEntry note={n} />)}
       {
-        recentNotes.length === 0 && (
-          <p class="mt-6 text-muted">No notes yet.</p>
+        recentFeed.map((item) =>
+          item.kind === "note" ? (
+            <FeedEntry
+              kind="note"
+              entry={item.entry}
+              Content={item.Content}
+              compact
+            />
+          ) : (
+            <FeedEntry kind="blog" entry={item.entry} compact />
+          )
+        )
+      }
+      {
+        recentFeed.length === 0 && (
+          <p class="mt-6 text-muted">Nothing in the feed yet.</p>
         )
       }
     </div>

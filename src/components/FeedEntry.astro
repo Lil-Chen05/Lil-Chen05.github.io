@@ -1,0 +1,185 @@
+---
+import type { CollectionEntry } from "astro:content";
+import TagPill from "./TagPill.astro";
+
+type Props =
+  | {
+      kind: "note";
+      entry: CollectionEntry<"notes">;
+      Content?: any;
+      compact?: boolean;
+    }
+  | {
+      kind: "blog";
+      entry: CollectionEntry<"blog">;
+      compact?: boolean;
+    };
+
+const props = Astro.props as Props;
+const { entry, compact = false } = props;
+const date = entry.data.date;
+const formattedDate = date.toLocaleDateString("en-CA", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
+function makeLede(body: unknown): string | undefined {
+  if (typeof body !== "string") return undefined;
+  const raw = body
+    .replace(/^---[\s\S]*?---/, "")
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/[#>*_`~\[\]()!-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!raw) return undefined;
+  return raw.length > 180 ? raw.slice(0, 180) + "…" : raw;
+}
+
+const lede =
+  props.kind === "note" && compact && "body" in entry
+    ? makeLede((entry as unknown as { body: unknown }).body)
+    : undefined;
+---
+
+{
+  props.kind === "note" ? (
+    <article class:list={["feed-row", { compact }]}>
+      <header class="feed-head">
+        <TagPill tag="Note" />
+        <time class="feed-date" datetime={date.toISOString()}>
+          {formattedDate}
+        </time>
+      </header>
+      <h2 class="feed-title">{entry.data.title}</h2>
+      {compact
+        ? lede && <p class="feed-desc">{lede}</p>
+        : props.Content && (
+            <div class="feed-note-body">
+              <props.Content />
+            </div>
+          )}
+    </article>
+  ) : (
+    <article class:list={["feed-row", { compact }]}>
+      <header class="feed-head">
+        <TagPill tag="Blog" />
+        <time class="feed-date" datetime={date.toISOString()}>
+          {formattedDate}
+        </time>
+      </header>
+      <h2 class="feed-title">
+        <a href={`/blog/${entry.id}`}>{entry.data.title}</a>
+      </h2>
+      <p class="feed-desc">
+        {(entry as CollectionEntry<"blog">).data.description}
+      </p>
+      {!compact && (
+        <a href={`/blog/${entry.id}`} class="feed-more">
+          Read more →
+        </a>
+      )}
+    </article>
+  )
+}
+
+<style>
+  .feed-row {
+    padding: 22px 0 26px;
+    border-top: 1px solid var(--border);
+  }
+  .feed-row:first-of-type {
+    border-top: 0;
+  }
+  .feed-row.compact {
+    padding: 16px 0 18px;
+  }
+  .feed-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .feed-date {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .feed-title {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    margin: 10px 0 0;
+    color: var(--text);
+  }
+  .feed-row.compact .feed-title {
+    font-size: 18px;
+  }
+  .feed-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.12s ease;
+  }
+  .feed-title a:hover {
+    color: var(--accent);
+  }
+  .feed-note-body {
+    margin-top: 12px;
+    font-family: var(--font-serif);
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .feed-note-body :global(p) {
+    margin-top: 10px;
+  }
+  .feed-note-body :global(p:first-child) {
+    margin-top: 0;
+  }
+  .feed-note-body :global(h2),
+  .feed-note-body :global(h3) {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    margin-top: 18px;
+  }
+  .feed-note-body :global(code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--surface);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+  }
+  .feed-note-body :global(ul),
+  .feed-note-body :global(ol) {
+    margin-top: 10px;
+    padding-left: 1.5rem;
+  }
+  .feed-note-body :global(ul) {
+    list-style: disc;
+  }
+  .feed-note-body :global(ol) {
+    list-style: decimal;
+  }
+  .feed-desc {
+    font-family: var(--font-serif);
+    font-size: 15.5px;
+    color: var(--muted);
+    margin: 10px 0 0;
+    line-height: 1.55;
+  }
+  .feed-row.compact .feed-desc {
+    font-size: 14.5px;
+  }
+  .feed-more {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .feed-more:hover {
+    text-decoration: underline;
+  }
+</style>

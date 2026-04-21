@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import TagPill from "../../components/TagPill.astro";
 import Thumb from "../../components/Thumb.astro";
+import GalleryImage from "../../components/GalleryImage.astro";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -123,15 +124,10 @@ const linkEntries = links
       {
         gallery && gallery.length > 0 && (
           <div class="pd-gallery">
-            <div class="gallery-label">More looks</div>
+            <div class="gallery-label">Gallery</div>
             <div class="gallery-grid">
-              {gallery.map((g, i) => (
-                <Thumb
-                  seed={`${title}-${i}`}
-                  src={g.src}
-                  label={g.caption}
-                  aspect="4 / 3"
-                />
+              {gallery.map((g) => (
+                <GalleryImage src={g.src} caption={g.caption} />
               ))}
             </div>
           </div>
@@ -421,8 +417,8 @@ const linkEntries = links
     margin-bottom: 14px;
   }
   .gallery-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
 </style>
