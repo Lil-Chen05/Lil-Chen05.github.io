@@ -4,32 +4,104 @@ import Layout from "../../layouts/Layout.astro";
 import SectionLabel from "../../components/SectionLabel.astro";
 import LeafRating from "../../components/LeafRating.astro";
 
-// Filler content — edit these in place. User will replace with real entries.
-const research = [
+type Advisor = { name: string; url?: string };
+type ResearchEntry = {
+  title: string;
+  lab: string;
+  advisors: Advisor[];
+  period: string;
+  take: string;
+};
+type InternshipEntry = {
+  role: string;
+  org: string;
+  period: string;
+  take: string;
+  kind: "internship" | "teaching";
+};
+
+const research: ResearchEntry[] = [
   {
-    title: "Sparse probes for in-context learning",
-    lab: "McGill Reasoning & Learning Lab",
-    advisor: "Prof. N. Reddy",
-    period: "Jan – Apr 2026",
-    take: "Empirical study of how small LLMs route in-context examples. My part: probing activations, running the ablations.",
+    title: "Token Uncertainty in LLM Reasoning",
+    lab: "McGill · COMP 400 Honours Project",
+    advisors: [
+      {
+        name: "Prof. Siva Reddy",
+        url: "https://scholar.google.com/citations?hl=en&user=LZZAAtoAAAAJ",
+      },
+      {
+        name: "Gaurav Kamath",
+        url: "https://scholar.google.com/citations?user=loIgKB0AAAAJ&hl=en",
+      },
+    ],
+    period: "May – Aug 2026",
+    take: "My honours project in Prof. Reddy's group, advised day-to-day by Gaurav. I am looking at whether token-level entropy spikes in an LLM's reasoning trace are a more faithful diagnostic of uncertainty than the confidence score the model says out loud, using PROBCOPA as a stress-test dataset for probabilistic reasoning.",
   },
   {
-    title: "Course Assistant — COMP 250",
-    lab: "McGill CS",
-    advisor: "Prof. G. Blanchette",
-    period: "Sep – Dec 2024",
-    take: "Ran weekly tutorials and graded assignments. Got better at explaining recursion than writing it.",
+    title: "NLP Bias & Representation",
+    lab: "McGill Artificial Intelligence Society",
+    advisors: [],
+    period: "Feb – Sep 2025",
+    take: "An exploratory stretch of reading and literature review on cultural bias in transformer language models, focused on parliamentary corpora like the Nunavut Hansard against the Canadian Hansard. A lot of this was reading papers and trying to understand what masked language modeling bias evaluation actually looks like in practice.",
+  },
+  {
+    title: "Directed Reading Program · Persistent Homology",
+    lab: "McGill Mathematics & Statistics",
+    advisors: [{ name: "Julien Cheng" }],
+    period: "Jan – May 2025",
+    take: "A semester-long reading program where I studied persistent homology under Julien Cheng. This was the first time I had to sit with graduate-level math for its own sake instead of for a course, and it let me me explore what theoretical math research really is.",
+  },
+  {
+    title: "Triadic Patterns for Explainable AI",
+    lab: "University of Regina, Computer Science",
+    advisors: [
+      {
+        name: "Prof. Yiyu Yao",
+        url: "https://scholar.google.com/citations?user=_aL0fcQAAAAJ&hl=en",
+      },
+      {
+        name: "Qiaoyi Li",
+        url: "https://scholar.google.com/citations?hl=en&user=pxErcl8AAAAJ",
+      },
+    ],
+    period: "May 2024 – Feb 2025",
+    take: "My first real research experience, working with Prof. Yao and Qiaoyi on triadic pattern structures for XAI. It became a first-author paper at IJCRS 2025 (Springer).",
   },
 ];
 
-const internships = [
+const internships: InternshipEntry[] = [
   {
-    role: "Software Engineering Intern",
-    org: "Example Co.",
+    role: "Backend Developer, T&O Program",
+    org: "RBC",
+    period: "Incoming · May – Aug 2026",
+    take: "Starting this May in Montreal on RBC's Technology & Operations internship program, joining a backend team. I'll be primarily working on backend using Java Spring Boot.",
+    kind: "internship",
+  },
+  {
+    role: "Full Stack Developer Co-op",
+    org: "InterPro Pipe and Steel",
     period: "May – Aug 2025",
-    take: "Rewrote a reconciliation service that was timing out for large customers; median job time fell 8×.",
+    take: "Spent the summer in Regina writing internal WPF apps used by the shipping, training, and finance teams. It was my first time writing C# and shipping something that real coworkers would use every week.",
+    kind: "internship",
+  },
+  {
+    role: "Course Assistant, MATH 208",
+    org: "McGill University",
+    period: "Fall 2025",
+    take: "Introduction to Statistical Computing.",
+    kind: "teaching",
+  },
+  {
+    role: "Course Assistant, MATH 203",
+    org: "McGill University",
+    period: "Winter 2025",
+    take: "Principles of Statistics 1",
+    kind: "teaching",
   },
 ];
+
+const workRoles = internships.filter((e) => e.kind === "internship");
+const teachingRoles = internships.filter((e) => e.kind === "teaching");
 
 const courseCollection = (await getCollection("courses")).sort((a, b) =>
   a.data.code.localeCompare(b.data.code)
@@ -72,7 +144,24 @@ const terms = Array.from(termsMap.entries());
             <div class="exp-period">{r.period}</div>
           </div>
           <div class="exp-meta">
-            {r.lab} · with {r.advisor}
+            {r.lab}
+            {r.advisors.length > 0 && (
+              <>
+                {" · with "}
+                {r.advisors.map((a, j) => (
+                  <>
+                    {j > 0 && ", "}
+                    {a.url ? (
+                      <a href={a.url} target="_blank" rel="noopener">
+                        {a.name}
+                      </a>
+                    ) : (
+                      a.name
+                    )}
+                  </>
+                ))}
+              </>
+            )}
           </div>
           <p class="exp-take">{r.take}</p>
         </div>
@@ -83,7 +172,7 @@ const terms = Array.from(termsMap.entries());
   <section class="mt-14" id="internships">
     <SectionLabel>Internships</SectionLabel>
     {
-      internships.map((e, i) => (
+      workRoles.map((e, i) => (
         <div class:list={["exp-row compact", { first: i === 0 }]}>
           <div class="exp-row-head">
             <div class="exp-title">
@@ -96,9 +185,25 @@ const terms = Array.from(termsMap.entries());
         </div>
       ))
     }
+    {workRoles.length === 0 && <p class="text-muted">Nothing to show yet.</p>}
+
     {
-      internships.length === 0 && (
-        <p class="text-muted">Nothing to show yet.</p>
+      teachingRoles.length > 0 && (
+        <div class="teaching-group">
+          <div class="teaching-label">Teaching</div>
+          {teachingRoles.map((e) => (
+            <div class="exp-row compact">
+              <div class="exp-row-head">
+                <div class="exp-title">
+                  {e.role}
+                  <span class="exp-org"> · {e.org}</span>
+                </div>
+                <div class="exp-period">{e.period}</div>
+              </div>
+              <p class="exp-take">{e.take}</p>
+            </div>
+          ))}
+        </div>
       )
     }
   </section>
@@ -237,6 +342,29 @@ const terms = Array.from(termsMap.entries());
     color: var(--text);
     margin: 10px 0 0;
     line-height: 1.55;
+  }
+  .exp-meta a {
+    color: var(--muted);
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 2px;
+  }
+  .exp-meta a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+  .teaching-group {
+    margin-top: 28px;
+  }
+  .teaching-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
   }
 
   .terms {
