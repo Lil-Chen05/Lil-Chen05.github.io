@@ -1,0 +1,29 @@
+---
+interface Props {
+  n: number;
+}
+const { n } = Astro.props;
+const leaves = [1, 2, 3, 4, 5];
+---
+
+<div class="leaves" aria-label={`${n} of 5`}>
+  {
+    leaves.map((i) => (
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+        <path
+          d="M5 1 C 2 3, 2 7, 5 9 C 8 7, 8 3, 5 1 Z"
+          fill={i <= n ? "var(--accent)" : "transparent"}
+          stroke={i <= n ? "var(--accent)" : "var(--border)"}
+          stroke-width="1"
+        />
+      </svg>
+    ))
+  }
+</div>
+
+<style>
+  .leaves {
+    display: flex;
+    gap: 3px;
+  }
+</style>

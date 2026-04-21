@@ -28,6 +28,14 @@ const projects = defineCollection({
     description: z.string(),
     tags: z.array(z.enum(["swe", "ai", "nlp", "school"])),
     featured: z.boolean().optional(),
+    duration: z.string().optional(),
+    status: z.string().optional(),
+    stack: z.array(z.string()).optional(),
+    hero: z.string().optional(),
+    heroCaption: z.string().optional(),
+    gallery: z
+      .array(z.object({ src: z.string(), caption: z.string().optional() }))
+      .optional(),
     links: z
       .object({
         github: z.string().url().optional(),

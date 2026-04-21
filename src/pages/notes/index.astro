@@ -12,10 +12,10 @@ const notes = (await getCollection("notes")).sort(
   title="Notes"
   description="Short posts — what I'm learning, thinking, and working on."
 >
-  <h1 class="text-3xl">Notes</h1>
-  <p class="mt-3 text-muted">
-    Short posts/updates about things I'm learning, small wins.
-    Roughly in reverse chronological order.
+  <h1 class="page-h1">Notes</h1>
+  <p class="page-lede">
+    Short posts on what I'm learning, thinking, and working on. In reverse chronological
+    order.
   </p>
 
   <div class="mt-8">
@@ -27,3 +27,25 @@ const notes = (await getCollection("notes")).sort(
     }
   </div>
 </Layout>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-serif);
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0;
+    color: var(--text);
+  }
+  .page-lede {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    color: var(--muted);
+    margin: 12px 0 0;
+    max-width: 56ch;
+  }
+  .mt-8 {
+    margin-top: 2rem;
+  }
+</style>

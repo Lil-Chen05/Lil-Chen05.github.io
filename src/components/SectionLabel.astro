@@ -1,0 +1,39 @@
+---
+interface Props {
+  as?: "h2" | "h3" | "div";
+  id?: string;
+}
+const { as: Tag = "h2", id } = Astro.props;
+---
+
+<div class="section-label" id={id}>
+  <Tag class="label-text">
+    <slot />
+  </Tag>
+  <span class="label-rule" aria-hidden="true"></span>
+</div>
+
+<style>
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .label-text {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .label-rule {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+</style>

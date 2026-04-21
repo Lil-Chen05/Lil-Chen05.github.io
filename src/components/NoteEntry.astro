@@ -1,48 +1,80 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { render } from "astro:content";
 
 interface Props {
   note: CollectionEntry<"notes">;
+  preview?: boolean;
 }
 
-const { note } = Astro.props;
+const { note, preview = true } = Astro.props;
 const { title, date } = note.data;
-const { Content } = await render(note);
 const formattedDate = date.toLocaleDateString("en-CA", {
   year: "numeric",
   month: "short",
   day: "numeric",
 });
+
+let lede: string | undefined;
+if (preview && "body" in note && typeof note.body === "string") {
+  const raw = note.body
+    .replace(/^---[\s\S]*?---/, "")
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/[#>*_`~\[\]()!-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (raw) lede = raw.slice(0, 160) + (raw.length > 160 ? "…" : "");
+}
 ---
 
-<article class="border-t border-border py-8">
-  <header class="flex items-baseline justify-between gap-4">
-    <h3 class="text-lg">
-      <a href={`/notes/${note.id}`} class="no-underline text-text hover:text-accent">
-        {title}
-      </a>
+<article class="note-row">
+  <div class="note-main">
+    <h3 class="note-title">
+      <a href={`/notes/${note.id}`}>{title}</a>
     </h3>
-    <time
-      class="shrink-0 font-sans text-xs text-muted"
-      datetime={date.toISOString()}
-    >
-      {formattedDate}
-    </time>
-  </header>
-  <div class="prose mt-3">
-    <Content />
+    {lede && <p class="note-lede">{lede}</p>}
   </div>
+  <time class="note-date" datetime={date.toISOString()}>{formattedDate}</time>
 </article>
 
 <style>
-  article :global(a.no-underline) {
+  .note-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  .note-row:first-child {
+    border-top: 0;
+  }
+  .note-title {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.3;
+  }
+  .note-title a {
+    color: inherit;
     text-decoration: none;
+    transition: color 0.12s ease;
   }
-  .prose :global(p) {
-    margin-top: 0.5rem;
+  .note-title a:hover {
+    color: var(--accent);
   }
-  .prose :global(p):first-child {
-    margin-top: 0;
+  .note-lede {
+    font-family: var(--font-serif);
+    font-size: 14.5px;
+    color: var(--muted);
+    margin: 2px 0 0;
+    line-height: 1.5;
+  }
+  .note-date {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
   }
 </style>

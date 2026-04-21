@@ -4,6 +4,7 @@ import Layout from "../layouts/Layout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import NoteEntry from "../components/NoteEntry.astro";
 import ActivityPlant from "../components/ActivityPlant.astro";
+import SectionLabel from "../components/SectionLabel.astro";
 import { computeActivity } from "../lib/activity";
 
 const featuredProjects = (await getCollection("projects"))
@@ -16,89 +17,218 @@ const recentNotes = (await getCollection("notes"))
   .slice(0, 5);
 
 const { score, lastActivity } = await computeActivity();
+
+const nowMonth = new Date().toLocaleDateString("en-US", { month: "long" });
 ---
 
 <Layout wide>
-  <section class="flex items-start gap-6 sm:gap-8">
-    <img
-      src="/images/jerry.jpg"
-      alt="Jerry Chen"
-      width="84"
-      height="84"
-      class="hidden shrink-0 rounded-full border border-border object-cover sm:block"
-      style="width: 84px; height: 84px;"
-    />
-    <div class="flex-1">
-      <h1 class="text-3xl sm:text-4xl">Jerry Chen</h1>
-      <p class="mt-3 text-muted">
-        Computer science at McGill. I work across software engineering, AI, and
-        language research, and write short notes about what I'm learning.
-      </p>
+  <section class="hero-row">
+    <div class="hero-bio">
+      <div class="bio-top">
+        <img
+          src="/images/jerry.jpg"
+          alt="Jerry Chen"
+          width="104"
+          height="128"
+          class="bio-photo"
+        />
+        <div>
+          <h1 class="bio-name">Jerry Chen</h1>
+          <p class="bio-lede">
+            Welcome to my personal website! This is my personal LinkedIn/Journal
+            where I plan to make weekly updates to my projects or short notes.
+            Here you will be able to find out what I'm currently spending my time on,
+            and also see what I have worked on in the past.
+          </p>
+        </div>
+      </div>
+
+      <div class="now-box">
+        <div class="now-label-col">
+          <div class="now-label">Now</div>
+          <div class="now-month">{nowMonth}</div>
+        </div>
+        <div class="now-body">
+        <ul style="list-style-type: disc; padding-left: 20px;">
+          <li>Incoming RBC Developer Intern in Montreal</li>
+          <li>Exploring token uncertainty in LLMs for COMP 400 at McGill University</li>
+          <li>Working on finalizing MVP demo for The Bench</li>
+          <li>Inter Montreal football training</li>
+        </ul>
+      </div>
+      </div>
+    </div>
+
+    <aside class="hero-plant">
+      <ActivityPlant score={score} lastActivity={lastActivity} />
+    </aside>
+  </section>
+
+  <section class="mt-16">
+    <div class="row-head">
+      <SectionLabel>Selected projects</SectionLabel>
+      <a href="/projects" class="row-head-link">All projects →</a>
+    </div>
+    <div>
+      {
+        featuredProjects.map((p, i) => (
+          <ProjectCard
+            project={p}
+            last={i === featuredProjects.length - 1}
+          />
+        ))
+      }
+      {
+        featuredProjects.length === 0 && (
+          <p class="mt-6 text-muted">No featured projects yet.</p>
+        )
+      }
     </div>
   </section>
 
-  <div class="home-split mt-16">
-    <div class="home-main">
-      <section>
-        <div class="flex items-baseline justify-between">
-          <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
-            Selected projects
-          </h2>
-          <a href="/projects" class="font-sans text-xs">All projects →</a>
-        </div>
-        <div class="mt-4">
-          {featuredProjects.map((p) => <ProjectCard project={p} />)}
-          {
-            featuredProjects.length === 0 && (
-              <p class="mt-6 text-muted">No featured projects yet.</p>
-            )
-          }
-        </div>
-      </section>
-
-      <section class="mt-16">
-        <div class="flex items-baseline justify-between">
-          <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
-            Recent notes
-          </h2>
-          <a href="/notes" class="font-sans text-xs">All notes →</a>
-        </div>
-        <div class="mt-4">
-          {recentNotes.map((n) => <NoteEntry note={n} />)}
-          {
-            recentNotes.length === 0 && (
-              <p class="mt-6 text-muted">No notes yet.</p>
-            )
-          }
-        </div>
-      </section>
+  <section class="mt-16">
+    <div class="row-head">
+      <SectionLabel>Recent notes</SectionLabel>
+      <a href="/notes" class="row-head-link">All notes →</a>
     </div>
-
-    <div class="home-aside">
-      <ActivityPlant score={score} lastActivity={lastActivity} />
+    <div>
+      {recentNotes.map((n) => <NoteEntry note={n} />)}
+      {
+        recentNotes.length === 0 && (
+          <p class="mt-6 text-muted">No notes yet.</p>
+        )
+      }
     </div>
-  </div>
+  </section>
 </Layout>
 
 <style>
-  .home-main {
-    min-width: 0;
-    max-width: 65ch;
+  .hero-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: stretch;
   }
-  .home-aside {
+  @media (min-width: 1024px) {
+    .hero-row {
+      grid-template-columns: minmax(0, 1fr) 240px;
+      gap: 48px;
+    }
+  }
+
+  .hero-bio {
+    display: flex;
+    flex-direction: column;
+    max-width: 560px;
+  }
+  .bio-top {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+  @media (min-width: 640px) {
+    .bio-top {
+      gap: 28px;
+    }
+  }
+  .bio-photo {
+    width: 96px;
+    height: auto;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+    aspect-ratio: 4 / 5;
+  }
+  @media (min-width: 640px) {
+    .bio-photo {
+      width: 104px;
+    }
+  }
+  .bio-name {
+    font-family: var(--font-serif);
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0;
+    color: var(--text);
+  }
+  @media (min-width: 640px) {
+    .bio-name {
+      font-size: 42px;
+    }
+  }
+  .bio-lede {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin: 14px 0 0;
+  }
+
+  .now-box {
+    margin-top: 24px;
+    border: 1px solid var(--border);
+    padding: 18px 22px;
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .now-label {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .now-month {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .now-body {
+    font-family: var(--font-serif);
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .hero-plant {
     display: none;
   }
   @media (min-width: 1024px) {
-    .home-split {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 260px;
-      gap: 48px;
-      align-items: start;
-    }
-    .home-aside {
+    .hero-plant {
       display: block;
-      position: sticky;
-      top: 5rem;
+      align-self: stretch;
     }
+  }
+
+  .row-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .row-head :global(.section-label) {
+    flex: 1;
+  }
+  .row-head-link {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    white-space: nowrap;
+    margin-bottom: 22px;
+  }
+  .row-head-link:hover {
+    color: var(--accent);
+  }
+
+  .mt-16 {
+    margin-top: 4rem;
   }
 </style>

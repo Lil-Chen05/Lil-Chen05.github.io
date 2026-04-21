@@ -1,7 +1,8 @@
 ---
 import { getCollection, render } from "astro:content";
-import PostLayout from "../../components/PostLayout.astro";
+import Layout from "../../layouts/Layout.astro";
 import TagPill from "../../components/TagPill.astro";
+import Thumb from "../../components/Thumb.astro";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -12,47 +13,416 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { title, description, date, tags, links } = project.data;
+const {
+  title,
+  description,
+  date,
+  tags,
+  links,
+  duration,
+  status,
+  stack,
+  hero,
+  heroCaption,
+  gallery,
+} = project.data;
 const { Content } = await render(project);
+const year = date.getFullYear().toString();
 
 const linkEntries = links
   ? (
       [
-        ["github", "GitHub", links.github],
-        ["demo", "Demo", links.demo],
-        ["devpost", "Devpost", links.devpost],
-        ["paper", "Paper", links.paper],
+        ["github", "github ↗", links.github],
+        ["demo", "demo ↗", links.demo],
+        ["devpost", "devpost ↗", links.devpost],
+        ["paper", "paper ↗", links.paper],
       ] as const
     ).filter(([, , url]) => !!url)
   : [];
 ---
 
-<PostLayout
-  title={title}
-  description={description}
-  date={date}
-  eyebrow="Project"
-  backHref="/projects"
-  backLabel="All projects"
->
-  <div class="mb-6 flex flex-wrap gap-1.5 font-sans">
-    {tags.map((t) => <TagPill tag={t} />)}
+<Layout title={title} description={description} wide>
+  <div class="pd-grid">
+    <aside class="pd-rail">
+      <a href="/projects" class="pd-back">← Projects</a>
+      <div class="pd-meta">
+        <div class="meta-row">
+          <span class="meta-k">Year</span><span class="meta-v">{year}</span>
+        </div>
+        {
+          duration && (
+            <div class="meta-row">
+              <span class="meta-k">Duration</span>
+              <span class="meta-v">{duration}</span>
+            </div>
+          )
+        }
+        {
+          status && (
+            <div class="meta-row">
+              <span class="meta-k">Status</span>
+              <span class="meta-v meta-italic">{status}</span>
+            </div>
+          )
+        }
+      </div>
+      {
+        stack && stack.length > 0 && (
+          <div class="built-with">
+            <div class="bw-label">Built with</div>
+            <div class="bw-chips">
+              {stack.map((s) => (
+                <span class="bw-chip">{s}</span>
+              ))}
+            </div>
+          </div>
+        )
+      }
+      {
+        linkEntries.length > 0 && (
+          <div class="pd-links">
+            {linkEntries.map(([, label, url]) => (
+              <a href={url}>{label}</a>
+            ))}
+          </div>
+        )
+      }
+    </aside>
+
+    <div class="pd-strip">
+      <a href="/projects" class="pd-back pd-back-mobile">← Projects</a>
+      <div class="strip-row">
+        <span>{year}</span>
+        {duration && (<><span class="dot"></span><span>{duration}</span></>)}
+        {status && (<><span class="dot"></span><span class="meta-italic">{status}</span></>)}
+        <span class="spacer"></span>
+        {
+          linkEntries.map(([, label, url]) => (
+            <a href={url} class="strip-link">{label}</a>
+          ))
+        }
+      </div>
+    </div>
+
+    <article class="pd-main">
+      <h1 class="pd-title">{title}.</h1>
+      <p class="pd-dek">{description}</p>
+      <div class="pd-tags">
+        {tags.map((t) => <TagPill tag={t} />)}
+      </div>
+
+      <div class="pd-hero">
+        <Thumb seed={title} src={hero} label={title.toLowerCase()} aspect="16 / 9" />
+        {heroCaption && <div class="hero-caption">{heroCaption}</div>}
+      </div>
+
+      <div class="pd-body">
+        <Content />
+      </div>
+
+      {
+        gallery && gallery.length > 0 && (
+          <div class="pd-gallery">
+            <div class="gallery-label">More looks</div>
+            <div class="gallery-grid">
+              {gallery.map((g, i) => (
+                <Thumb
+                  seed={`${title}-${i}`}
+                  src={g.src}
+                  label={g.caption}
+                  aspect="4 / 3"
+                />
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {
+        stack && stack.length > 0 && (
+          <div class="pd-stack-mobile">
+            <div class="bw-label">Built with</div>
+            <div class="bw-chips">
+              {stack.map((s) => <span class="bw-chip">{s}</span>)}
+            </div>
+          </div>
+        )
+      }
+    </article>
   </div>
+</Layout>
 
-  <p class="text-muted">{description}</p>
-
-  {
-    linkEntries.length > 0 && (
-      <p class="mt-4 font-sans text-sm">
-        {linkEntries.map(([key, label, url], i) => (
-          <>
-            {i > 0 && <span class="mx-2">·</span>}
-            <a href={url}>{label}</a>
-          </>
-        ))}
-      </p>
-    )
+<style>
+  .pd-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .pd-rail {
+    display: none;
+  }
+  .pd-strip {
+    display: block;
+  }
+  .pd-back-mobile {
+    display: inline-block;
+    margin-bottom: 14px;
+  }
+  .pd-stack-mobile {
+    display: block;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  @media (min-width: 1024px) {
+    .pd-grid {
+      grid-template-columns: 200px minmax(0, 1fr);
+      gap: 56px;
+      align-items: start;
+    }
+    .pd-rail {
+      display: block;
+      position: sticky;
+      top: 24px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pd-strip,
+    .pd-stack-mobile {
+      display: none;
+    }
   }
 
-  <Content />
-</PostLayout>
+  .pd-back {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-block;
+  }
+  .pd-back:hover {
+    color: var(--accent);
+  }
+  .pd-meta {
+    margin-top: 22px;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .meta-k {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+  .meta-v {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--text);
+  }
+  .meta-italic {
+    font-family: var(--font-serif);
+    font-style: italic;
+  }
+  .built-with,
+  .pd-stack-mobile {
+    margin-top: 16px;
+  }
+  .bw-label {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .bw-chips {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .bw-chip {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10.5px;
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 2px;
+    line-height: 1.4;
+  }
+  .pd-links {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+  }
+  .pd-links a {
+    color: var(--accent);
+  }
+
+  .strip-row {
+    margin-top: 10px;
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--muted);
+    align-items: center;
+  }
+  .strip-row .dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--muted);
+    display: inline-block;
+  }
+  .strip-row .spacer {
+    flex: 1;
+  }
+  .strip-link {
+    color: var(--accent);
+    font-size: 11px;
+  }
+
+  .pd-main {
+    max-width: 640px;
+  }
+  .pd-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(32px, 6vw, 48px);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0;
+    color: var(--text);
+    word-break: break-word;
+  }
+  .pd-dek {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--muted);
+    margin: 12px 0 16px;
+    line-height: 1.45;
+  }
+  @media (min-width: 768px) {
+    .pd-dek {
+      font-size: 20px;
+    }
+  }
+  .pd-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .pd-hero {
+    margin-top: 28px;
+  }
+  .hero-caption {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* body (MDX): serif italic h2, connected by rule */
+  .pd-body {
+    margin-top: 8px;
+  }
+  .pd-body :global(h2) {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 30px 0 12px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+    line-height: 1.25;
+  }
+  .pd-body :global(h3) {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 18px;
+    margin: 24px 0 8px;
+    color: var(--text);
+  }
+  .pd-body :global(p) {
+    font-family: var(--font-serif);
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--text);
+    margin: 12px 0 0;
+  }
+  .pd-body :global(ul),
+  .pd-body :global(ol) {
+    margin-top: 12px;
+    padding-left: 1.5rem;
+  }
+  .pd-body :global(ul) {
+    list-style: disc;
+  }
+  .pd-body :global(ol) {
+    list-style: decimal;
+  }
+  .pd-body :global(li) {
+    margin-top: 4px;
+  }
+  .pd-body :global(code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--surface);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+  }
+  .pd-body :global(pre) {
+    margin-top: 12px;
+    padding: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+  .pd-body :global(pre code) {
+    background: transparent;
+    padding: 0;
+  }
+  .pd-body :global(blockquote) {
+    margin-top: 12px;
+    padding-left: 1rem;
+    border-left: 2px solid var(--border);
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .pd-gallery {
+    margin-top: 36px;
+  }
+  .gallery-label {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+</style>

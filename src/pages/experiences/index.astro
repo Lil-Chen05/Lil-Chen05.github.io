@@ -1,0 +1,278 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import SectionLabel from "../../components/SectionLabel.astro";
+import LeafRating from "../../components/LeafRating.astro";
+
+// Filler content — edit these in place. User will replace with real entries.
+const research = [
+  {
+    title: "Sparse probes for in-context learning",
+    lab: "McGill Reasoning & Learning Lab",
+    advisor: "Prof. N. Reddy",
+    period: "Jan – Apr 2026",
+    take: "Empirical study of how small LLMs route in-context examples. My part: probing activations, running the ablations.",
+  },
+  {
+    title: "Course Assistant — COMP 250",
+    lab: "McGill CS",
+    advisor: "Prof. G. Blanchette",
+    period: "Sep – Dec 2024",
+    take: "Ran weekly tutorials and graded assignments. Got better at explaining recursion than writing it.",
+  },
+];
+
+const internships = [
+  {
+    role: "Software Engineering Intern",
+    org: "Example Co.",
+    period: "May – Aug 2025",
+    take: "Rewrote a reconciliation service that was timing out for large customers; median job time fell 8×.",
+  },
+];
+
+const courseCollection = (await getCollection("courses")).sort((a, b) =>
+  a.data.code.localeCompare(b.data.code)
+);
+const termsMap = new Map<string, typeof courseCollection>();
+for (const c of courseCollection) {
+  const t = c.data.term;
+  if (!termsMap.has(t)) termsMap.set(t, [] as typeof courseCollection);
+  termsMap.get(t)!.push(c);
+}
+const terms = Array.from(termsMap.entries());
+---
+
+<Layout
+  title="Experiences"
+  description="Research, internships, and coursework at McGill."
+  wide
+>
+  <h1 class="page-h1">Experiences</h1>
+  <p class="page-lede">
+    Research I'm doing on the side, the internships and roles that filled the
+    gaps in between, and the coursework at McGill underneath it all.
+  </p>
+
+  <div class="anchor-bar">
+    <a href="#research">Research</a>
+    <a href="#internships">Internships</a>
+    <a href="#courses">Courses</a>
+    <span class="anchor-spacer"></span>
+    <span class="anchor-meta">B.Sc. Hons. Computer Science · Minor Statistics</span>
+  </div>
+
+  <section class="mt-12" id="research">
+    <SectionLabel>Research</SectionLabel>
+    {
+      research.map((r, i) => (
+        <div class:list={["exp-row", { first: i === 0 }]}>
+          <div class="exp-row-head">
+            <div class="exp-title">{r.title}</div>
+            <div class="exp-period">{r.period}</div>
+          </div>
+          <div class="exp-meta">
+            {r.lab} · with {r.advisor}
+          </div>
+          <p class="exp-take">{r.take}</p>
+        </div>
+      ))
+    }
+  </section>
+
+  <section class="mt-14" id="internships">
+    <SectionLabel>Internships</SectionLabel>
+    {
+      internships.map((e, i) => (
+        <div class:list={["exp-row compact", { first: i === 0 }]}>
+          <div class="exp-row-head">
+            <div class="exp-title">
+              {e.role}
+              <span class="exp-org"> · {e.org}</span>
+            </div>
+            <div class="exp-period">{e.period}</div>
+          </div>
+          <p class="exp-take">{e.take}</p>
+        </div>
+      ))
+    }
+    {
+      internships.length === 0 && (
+        <p class="text-muted">Nothing to show yet.</p>
+      )
+    }
+  </section>
+
+  <section class="mt-14" id="courses">
+    <SectionLabel>Courses</SectionLabel>
+    {
+      terms.length === 0 && (
+        <p class="text-muted">Coursework entries coming soon.</p>
+      )
+    }
+    <div class="terms">
+      {
+        terms.map(([term, courses]) => (
+          <div class="term-block">
+            <div class="term-head">
+              <span>{term}</span>
+              <span>
+                {courses.length} course{courses.length === 1 ? "" : "s"}
+              </span>
+            </div>
+            {courses.map((c) => (
+              <div class="course-row">
+                <span class="course-code">{c.data.code}</span>
+                <div>
+                  <div class="course-title">{c.data.title}</div>
+                </div>
+                {typeof c.data.rating === "number" && (
+                  <LeafRating n={c.data.rating} />
+                )}
+              </div>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-serif);
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0;
+    color: var(--text);
+  }
+  .page-lede {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    color: var(--muted);
+    margin: 12px 0 0;
+    max-width: 58ch;
+  }
+  .anchor-bar {
+    margin-top: 24px;
+    display: flex;
+    gap: 18px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .anchor-bar a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .anchor-bar a:hover {
+    color: var(--accent);
+  }
+  .anchor-spacer {
+    flex: 1;
+  }
+  .anchor-meta {
+    color: var(--muted);
+  }
+
+  .mt-12 {
+    margin-top: 3rem;
+  }
+  .mt-14 {
+    margin-top: 3.5rem;
+  }
+
+  .exp-row {
+    padding: 20px 0 22px;
+    border-top: 1px solid var(--border);
+  }
+  .exp-row.first {
+    border-top: 0;
+  }
+  .exp-row.compact {
+    padding: 18px 0 20px;
+  }
+  .exp-row-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .exp-title {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .exp-row.compact .exp-title {
+    font-size: 19px;
+  }
+  .exp-org {
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .exp-period {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .exp-meta {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .exp-take {
+    font-family: var(--font-serif);
+    font-size: 15px;
+    color: var(--text);
+    margin: 10px 0 0;
+    line-height: 1.55;
+  }
+
+  .terms {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .term-head {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .course-row {
+    display: grid;
+    grid-template-columns: 78px 1fr auto;
+    gap: 16px;
+    padding: 8px 0;
+    align-items: baseline;
+  }
+  .course-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .course-title {
+    font-family: var(--font-serif);
+    font-size: 15.5px;
+    color: var(--text);
+    font-weight: 500;
+  }
+</style>
+

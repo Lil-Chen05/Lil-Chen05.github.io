@@ -19,17 +19,19 @@ const tagDefs = [
 <Layout
   title="Projects"
   description="Projects across software engineering, AI, and NLP research."
+  wide
 >
-  <h1 class="text-3xl">Projects</h1>
-  <p class="mt-3 text-muted">
+  <h1 class="page-h1">Projects</h1>
+  <p class="page-lede">
     Work across software engineering, AI development, and NLP/LLM research.
+    Listed newest first; filter by track.
   </p>
 
   <div
     id="filter-bar"
     role="toolbar"
     aria-label="Filter projects by tag"
-    class="mt-8 flex flex-wrap gap-2 font-sans text-sm"
+    class="filter-bar"
   >
     {
       tagDefs.map((t, i) => (
@@ -45,11 +47,11 @@ const tagDefs = [
     }
   </div>
 
-  <div id="project-list" class="mt-6">
+  <div id="project-list" class="mt-2">
     {
-      projects.map((p) => (
+      projects.map((p, i) => (
         <div data-tags={p.data.tags.join(" ")}>
-          <ProjectCard project={p} />
+          <ProjectCard project={p} last={i === projects.length - 1} />
         </div>
       ))
     }
@@ -61,23 +63,58 @@ const tagDefs = [
 </Layout>
 
 <style>
+  .page-h1 {
+    font-family: var(--font-serif);
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0;
+    color: var(--text);
+  }
+  .page-lede {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    color: var(--muted);
+    margin: 12px 0 0;
+    max-width: 52ch;
+  }
+  .filter-bar {
+    margin: 28px 0 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: var(--font-sans);
+  }
   .filter-btn {
-    padding: 0.25rem 0.75rem;
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 10px;
     border: 1px solid var(--border);
-    border-radius: 9999px;
+    border-radius: 3px;
     color: var(--muted);
     background: transparent;
     cursor: pointer;
-    transition: color 0.12s ease, border-color 0.12s ease;
+    transition:
+      color 0.12s ease,
+      border-color 0.12s ease;
   }
   .filter-btn:hover {
     color: var(--accent);
     border-color: var(--accent);
   }
   .filter-btn[aria-pressed="true"] {
-    color: var(--bg);
-    background: var(--accent);
+    color: var(--accent);
     border-color: var(--accent);
+  }
+  .mt-2 {
+    margin-top: 0.5rem;
+  }
+  .mt-10 {
+    margin-top: 2.5rem;
   }
 </style>
 

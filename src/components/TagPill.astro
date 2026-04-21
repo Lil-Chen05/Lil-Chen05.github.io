@@ -1,12 +1,30 @@
 ---
 interface Props {
   tag: string;
+  active?: boolean;
 }
-
-const { tag } = Astro.props;
+const { tag, active = false } = Astro.props;
 const label = tag.toUpperCase();
 ---
 
-<span class="rounded border border-border px-1.5 py-0.5 text-[10px] tracking-wider text-muted">
-  {label}
-</span>
+<span class:list={["tag", { on: active }]}>{label}</span>
+
+<style>
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    line-height: 1.5;
+  }
+  .tag.on {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+</style>

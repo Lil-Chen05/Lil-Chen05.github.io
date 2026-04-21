@@ -1,29 +1,94 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import TagPill from "./TagPill.astro";
+import Thumb from "./Thumb.astro";
 
 interface Props {
   project: CollectionEntry<"projects">;
+  last?: boolean;
 }
 
-const { project } = Astro.props;
-const { title, description, tags } = project.data;
+const { project, last = false } = Astro.props;
+const { title, description, tags, hero } = project.data;
 ---
 
-<a href={`/projects/${project.id}`} class="block no-underline group">
-  <article class="border-t border-border py-6">
-    <div class="flex items-baseline justify-between gap-4">
-      <h3 class="text-xl text-text group-hover:text-accent">{title}</h3>
-      <div class="flex shrink-0 gap-1.5 font-sans">
+<a
+  href={`/projects/${project.id}`}
+  class:list={["card", { last }]}
+  aria-label={title}
+>
+  <article class="card-grid">
+    <div class="card-body">
+      <h3 class="card-title">{title}</h3>
+      <p class="card-lede">{description}</p>
+      <div class="card-tags">
         {tags.map((t) => <TagPill tag={t} />)}
       </div>
     </div>
-    <p class="mt-2 text-muted">{description}</p>
+    <div class="card-thumb">
+      <Thumb seed={title} src={hero} label={title.toLowerCase()} aspect="16 / 9" />
+    </div>
   </article>
 </a>
 
 <style>
-  a.no-underline {
+  .card {
+    display: block;
     text-decoration: none;
+    color: inherit;
+    border-top: 1px solid var(--border);
+    padding: 24px 0;
+  }
+  .card.last {
+    border-bottom: 1px solid var(--border);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+  @media (min-width: 640px) {
+    .card-grid {
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: 28px;
+    }
+  }
+  .card-body {
+    min-width: 0;
+  }
+  .card-title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.15;
+    transition: color 0.12s ease;
+  }
+  .card:hover .card-title {
+    color: var(--accent);
+  }
+  .card-lede {
+    font-family: var(--font-serif);
+    font-size: 15.5px;
+    color: var(--muted);
+    margin: 6px 0 12px;
+    line-height: 1.55;
+    max-width: 56ch;
+  }
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .card-thumb {
+    order: -1;
+  }
+  @media (min-width: 640px) {
+    .card-thumb {
+      order: 0;
+    }
   }
 </style>

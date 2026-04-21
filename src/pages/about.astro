@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import SectionLabel from "../components/SectionLabel.astro";
 ---
 
 <Layout
@@ -41,10 +42,8 @@ import Layout from "../layouts/Layout.astro";
   </section>
 
   <section class="mt-12">
-    <h2 class="font-sans text-xs uppercase tracking-widest text-muted">
-      What I work on
-    </h2>
-    <div class="mt-4 space-y-4">
+    <SectionLabel>What I work on</SectionLabel>
+    <div class="space-y-4">
       <p>
         My work spans three loose tracks. 
         <strong>Software engineering</strong>{" "}

@@ -1,0 +1,100 @@
+---
+interface Props {
+  seed: string;
+  label?: string;
+  aspect?: string;
+  src?: string;
+  alt?: string;
+  class?: string;
+}
+const {
+  seed,
+  label,
+  aspect = "16 / 9",
+  src,
+  alt,
+  class: cls = "",
+} = Astro.props;
+
+let hash = 0;
+for (let i = 0; i < seed.length; i++) {
+  hash = (hash * 31 + seed.charCodeAt(i)) & 0xffff;
+}
+const hue = hash % 360;
+const hueB = (hue + 30) % 360;
+const hueC = (hue + 200) % 360;
+const hueAccent = (hue + 60) % 360;
+---
+
+<div
+  class={`thumb ${cls}`}
+  style={`--hue:${hue};--hueB:${hueB};--hueC:${hueC};--hueAccent:${hueAccent};aspect-ratio:${aspect};`}
+>
+  {src && <img src={src} alt={alt ?? label ?? ""} />}
+  {label && !src && <span class="thumb-label">{label}</span>}
+</div>
+
+<style>
+  .thumb {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--hue) 22% 82%) 0%,
+      hsl(var(--hueB) 22% 74%) 60%,
+      hsl(var(--hueC) 14% 66%) 100%
+    );
+    flex-shrink: 0;
+  }
+  :global(:root[data-theme="dark"]) .thumb {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--hue) 18% 22%) 0%,
+      hsl(var(--hueB) 18% 28%) 60%,
+      hsl(var(--hueC) 10% 34%) 100%
+    );
+  }
+  .thumb::before {
+    content: "";
+    position: absolute;
+    width: 60%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    top: -15%;
+    right: -10%;
+    background: radial-gradient(
+      circle,
+      hsl(var(--hueAccent) 28% 88%) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+  :global(:root[data-theme="dark"]) .thumb::before {
+    background: radial-gradient(
+      circle,
+      hsl(var(--hueAccent) 24% 32%) 0%,
+      transparent 70%
+    );
+  }
+  .thumb img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .thumb-label {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+    letter-spacing: 0.3px;
+    color: rgba(40, 30, 20, 0.55);
+  }
+  :global(:root[data-theme="dark"]) .thumb-label {
+    color: rgba(255, 255, 255, 0.55);
+  }
+</style>
