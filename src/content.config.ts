@@ -52,7 +52,15 @@ const courses = defineCollection({
   schema: z.object({
     code: z.string(),
     title: z.string(),
-    term: z.string(),
+    category: z.enum([
+      "AI & Machine Learning",
+      "Computer Fundamentals",
+      "Mathematical Foundations",
+    ]),
+    level: z.enum(["honours", "graduate"]).optional(),
+    term: z.string().optional(),
+    instructor: z.string().optional(),
+    description: z.string(),
     rating: z.number().min(0).max(5).optional(),
   }),
 });

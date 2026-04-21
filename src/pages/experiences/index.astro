@@ -106,13 +106,20 @@ const teachingRoles = internships.filter((e) => e.kind === "teaching");
 const courseCollection = (await getCollection("courses")).sort((a, b) =>
   a.data.code.localeCompare(b.data.code)
 );
-const termsMap = new Map<string, typeof courseCollection>();
+const categoryOrder = [
+  "AI & Machine Learning",
+  "Computer Fundamentals",
+  "Mathematical Foundations",
+] as const;
+const byCategory = new Map<string, typeof courseCollection>();
 for (const c of courseCollection) {
-  const t = c.data.term;
-  if (!termsMap.has(t)) termsMap.set(t, [] as typeof courseCollection);
-  termsMap.get(t)!.push(c);
+  const k = c.data.category;
+  if (!byCategory.has(k)) byCategory.set(k, [] as typeof courseCollection);
+  byCategory.get(k)!.push(c);
 }
-const terms = Array.from(termsMap.entries());
+const courseGroups = categoryOrder
+  .filter((k) => byCategory.has(k))
+  .map((k) => [k, byCategory.get(k)!] as const);
 ---
 
 <Layout
@@ -211,16 +218,16 @@ const terms = Array.from(termsMap.entries());
   <section class="mt-14" id="courses">
     <SectionLabel>Courses</SectionLabel>
     {
-      terms.length === 0 && (
+      courseGroups.length === 0 && (
         <p class="text-muted">Coursework entries coming soon.</p>
       )
     }
     <div class="terms">
       {
-        terms.map(([term, courses]) => (
+        courseGroups.map(([category, courses]) => (
           <div class="term-block">
             <div class="term-head">
-              <span>{term}</span>
+              <span>{category}</span>
               <span>
                 {courses.length} course{courses.length === 1 ? "" : "s"}
               </span>
@@ -229,7 +236,25 @@ const terms = Array.from(termsMap.entries());
               <div class="course-row">
                 <span class="course-code">{c.data.code}</span>
                 <div>
-                  <div class="course-title">{c.data.title}</div>
+                  <div class="course-title">
+                    {c.data.title}
+                    {c.data.level === "honours" && (
+                      <span class="course-badge">Honours</span>
+                    )}
+                    {c.data.level === "graduate" && (
+                      <span class="course-badge">Graduate</span>
+                    )}
+                  </div>
+                  <p class="course-desc">{c.data.description}</p>
+                  {(c.data.instructor || c.data.term) && (
+                    <p class="course-meta">
+                      {c.data.instructor && <span>{c.data.instructor}</span>}
+                      {c.data.instructor && c.data.term && (
+                        <span class="dot"> · </span>
+                      )}
+                      {c.data.term && <span>{c.data.term}</span>}
+                    </p>
+                  )}
                 </div>
                 {typeof c.data.rating === "number" && (
                   <LeafRating n={c.data.rating} />
@@ -388,19 +413,55 @@ const terms = Array.from(termsMap.entries());
     display: grid;
     grid-template-columns: 78px 1fr auto;
     gap: 16px;
-    padding: 8px 0;
-    align-items: baseline;
+    padding: 12px 0;
+    align-items: start;
+    border-top: 1px solid var(--border);
+  }
+  .course-row:first-of-type {
+    border-top: 0;
   }
   .course-code {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 12px;
     color: var(--muted);
+    padding-top: 2px;
   }
   .course-title {
     font-family: var(--font-serif);
     font-size: 15.5px;
     color: var(--text);
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .course-badge {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-weight: 400;
+  }
+  .course-desc {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    color: var(--muted);
+    margin: 4px 0 0;
+    line-height: 1.55;
+  }
+  .course-meta {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    color: var(--muted);
+    margin: 6px 0 0;
+  }
+  .course-meta .dot {
+    color: var(--border);
   }
 </style>
 
