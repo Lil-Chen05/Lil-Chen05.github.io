@@ -28,3 +28,7 @@ pnpm-debug.log*
 
 # private style guide
 BeJerry.md
+
+# private docs — local only, not published
+CLAUDE.md
+DESIGN.md
