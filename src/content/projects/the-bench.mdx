@@ -1,7 +1,7 @@
 ---
-title: "The Bench — Full-Stack Fantasy Basketball Web App"
+title: "The Bench — Full-Stack Canadian U Sports Fantasy Platform"
 date: 2025-06-01
-description: "Built a production-style fantasy basketball platform with live roster management, parlay flows, predictive lines, and secure per-user data isolation."
+description: "A production-style Canadian U Sports fantasy sports platform with live roster management, parlay flows, predictive lines, and secure per-user data isolation."
 tags: ["swe", "ai"]
 featured: true
 links:
@@ -9,10 +9,14 @@ links:
   demo: "https://playthebench.vercel.app/"
 ---
 
-The Bench is my fantasy basketball web app focused on making sports data feel actionable instead of overwhelming. I wanted to build something closer to a real product than a class project, so I treated it like a production system: proper schema design, authentication, data ingestion, transactional logic, and a polished frontend that someone could actually use repeatedly.
+## Experience
 
-I built the app with Next.js 15, TypeScript, Supabase, Tailwind, and Vercel. On the backend/data side, I designed a normalized relational schema covering seasons, teams, players, games, and parlays, with row-level security so each user only sees their own data. I also built CSV ingestion flows for large historical datasets and made sure the pipeline preserved referential integrity across interconnected tables.
+My very first full-stack project turned startup where I am leading the technical development of both the website and the entire data prediction pipeline. It feels like a lot considering there is always work that needs to be done. Using the other task as a break from the current task is probably not sustainable. However, I have really enjoyed stepping out of my comfort zone and taking on a role of leadership that I would have stayed away from in high school.
 
-One part I am especially proud of was the transactional parlay engine. I implemented atomic balance deduction, rollback on failure, and trigger-based payouts so the app behaved consistently even when multiple actions touched the same betting or wallet state. On the frontend, I built a mobile-responsive interface with a global cart context, optimistic updates, and typed validation, which taught me a lot about keeping product UX fast without sacrificing correctness.
+## Motivation
 
-This project pushed me to think like both an engineer and a product builder. I learned how much full-stack quality depends on invisible systems work — schema design, auth boundaries, validation, and failure handling — not just attractive UI. It also gave me a strong sandbox for integrating predictive models into a real user-facing product rather than leaving them in notebooks.
+During second summer of university, I was preparing for my internship at InterPro Steel when a stranger approached me on LinkedIn with the idea of The Bench. As someone who has loved being part of sports communities, I have always wondered why sports in Canadian universities or even high schools are nowhere close to that of in the United States. On top of that, I kept hearing about how helpful building full-stack projects is for learning. Combining that with wanting to learn machine learning, this was the perfect project for me to combine my interests in sports, full-stack, and machine learning into one.
+
+## Learned
+
+This project has maybe taught me the most out of everything. As my first ever full-stack project, I had to essentially learn everything from scratch. From technical components like TypeScript, React, Supabase, Vercel, Next.js, PostgreSQL, networking fundamentals, system design, to machine learning concepts like regression, regularization, random forests, boosting, and LightGBM. Even now I am learning how to properly structure my website so that it can be scalable for the future. Beyond these, I have learned valuable skills in communicating my ideas with less-technical personnel, leading weekly meetings, and balancing an intensive startup alongside a full course load or internships.

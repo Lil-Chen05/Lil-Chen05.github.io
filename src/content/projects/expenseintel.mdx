@@ -10,10 +10,14 @@ links:
   devpost: "https://devpost.com/software/expenseintel"
 ---
 
-ExpenseIntel is a full-stack AI expense intelligence platform I built for SMB corporate card workflows. The idea was to go beyond static dashboards and create a system where users could ask questions about spending in natural language, get structured analysis back, flag compliance issues, and move directly into approval/reporting workflows.
+## Experience
 
-I built it with Node.js, Express, SQLite, and Resend, and one of the most interesting parts was the agentic analytics loop. I engineered a tool-based workflow where Claude could inspect the database schema, run constrained read-only SQL queries, and generate structured outputs like charts, summaries, and recommendations. That let the system answer business questions dynamically while still keeping the underlying data access controlled and explainable.
+Built at McGill's first ever Claude Builder Club hackathon, and my second hackathon experience. This one spanned across 3 days, which fortunately meant no all-nighters. First time ever using Claude Code was life-changing for the better. Being able to plan alongside Claude for hours to then watch it build exactly what I asked for was very cool. On the actual day of the hackathon, I had a trial with Inter Montréal soccer club and went directly to the hackathon afterwards. This project also won the Brim Financial Sub-Challenge, which was nice to experience winning for the first time.
 
-I also implemented a production-style approval flow using tokenized single-use email links, plus incremental compliance scanning that prevented duplicate violations across about 4,200 transactions. To make the product feel realistic end to end, I designed synthetic data generation for a 10-employee corporate card environment and deployed the app on Cloudflare Workers and D1 with a single-origin architecture.
+## Motivation
 
-This project stands out to me because it combined backend engineering, LLM workflow design, and product execution in one system. I learned a lot about constraining AI properly: the hard part is not just generating an answer, but building the surrounding infrastructure so the answer is grounded, auditable, and useful inside a business workflow. Winning the Brim Financial Challenge also gave me confidence that the project solved a problem other people immediately understood.
+I remember seeing the Instagram post and thought why not apply and see what I can build in only 8 hours. However, later on they allowed teams to start working up to 3 days earlier, which prompted my team and me to get a head start, especially considering I would miss the morning with my soccer trial. The objective was to win the Brim Sub-challenge from the beginning as we were disappointed in not winning anything from the last one we participated in.
+
+## Learned
+
+Beyond learning about all the capabilities of Claude Code, I learned how to integrate Claude API into real features and how to place specific guardrails to ensure effective token usage and quality reasoning. The restriction of API credits was a huge limiting factor, but it forced me to think critically about how to be efficient with the API call instructions.

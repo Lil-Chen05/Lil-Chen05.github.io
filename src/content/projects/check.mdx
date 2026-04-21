@@ -1,0 +1,22 @@
+---
+title: "Check — Real-Time Multiplayer Card Game"
+date: 2026-04-02
+description: "The online version of a memory and reaction based card game."
+tags: ["swe"]
+featured: true
+links:
+  github: "https://github.com/Lil-Chen05/check"
+  demo: "https://check-roan-kappa.vercel.app/"
+---
+
+## Experience
+
+This is a small passion project of mine that is based on my favourite card game. I had a lot of fun turning all the rules I know in my head into actual code, and it even made me think of edge cases that have never turned up in real life. Optimistically, this game becomes well-known worldwide and I become a lead developer of a multi-billion dollar gaming company. But for now, it's a way for me to play my favourite card game with my friends from back home in Regina, Saskatchewan.
+
+## Motivation
+
+I first learned this game on a camping trip with my roommates in Montreal. After showing my friends back home, we all fell in love with it and would play non-stop for hours every time we saw each other. When I had to return back to McGill, they complained to me that there was no online version and that they wish it existed. As someone who really liked to play the game and also wanted to learn how to create quick real-time server responses across multiple devices, I decided to build it.
+
+## Learned
+
+I learned that bringing ideas and rules from your head to code is often more tedious than expected. Especially having to work around how to make real-time reactions fair for all users. I learned how to work around digital constraints for games, like using Socket.io to keep 3 to 12 players in sync so that peeks, swaps, and grabs all resolve in the same order on every device. On top of that, I had to handle failed steal attempts with a penalty draw so the reaction timing actually meant something. Beyond the game logic, I picked up Supabase for auth, stat tracking, and the leaderboard, and got more comfortable with React 19, Vite, and Tailwind on the frontend alongside a Node and Express server.

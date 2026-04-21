@@ -9,20 +9,14 @@ links:
   devpost: "https://devpost.com/software/sustainify-thnj8v"
 ---
 
-Sustainify is a Chrome extension that scans a product page while you're shopping and returns a sustainability score with a short justification. The score is built from signals inspired by the ESG framework — material composition, transport emissions, ethical sourcing, community approval — and sits alongside a small list of greener alternatives surfaced from sustainability-focused subreddits.
+## Experience
 
-Beyond scoring individual products, the extension keeps a personal Stash of things you've bought. Each item contributes to an overall Sustainify Score broken down by category, so you can see where your footprint is heaviest. A small plant on your dashboard grows or wilts with your score — a light gamified layer to make the feedback loop feel less clinical.
+Built at McHacks 13, my first ever hackathon experience was filled with extreme highs and lows. There was a point when the UI was so bad that we contemplated even submitting the project. However, the highs were equally extreme. While demoing the project to judges, our team really felt like we were going to win it all. We won nothing. Sleeping 0 hours overnight and needing to demo 5 times was surely an experience that I will never forget.
 
-## How it's built
+## Motivation
 
-The frontend is framework-less — plain JavaScript, HTML, and CSS — which made it harder to build but left us with a light, modular extension that's easy to move around. We used `chrome.storage` for persistence and syncing, so flipping themes or adding to your Stash in one surface updates every other surface instantly. The backend is three Gumloop workflows: one for detecting product pages, one for scoring, one for pulling alternatives. We call them concurrently to keep the user-visible latency low.
+I have always been very into fashion and try to be conscious of what purchases I make online. Many people, including myself, have given in to the fast fashion industry when looking for a specific garment. I realized that if there was an easy way to get sustainable alternatives for the products I wanted, I would definitely support that. Hence, I wanted to build Sustainify, an easy-to-install Chrome extension that helps users be more sustainable in their shopping.
 
-## What I worked through
+## Learned
 
-The hardest call was the alternative-products feature. Searching the open web was slow and often drifted off-topic; maintaining a manual database didn't scale to the breadth of products we wanted to cover. We landed on Reddit as a stopgap — constraining the AI to sustainability-minded subreddits cut hallucinated links and kept suggestions grounded.
-
-The other thread was being deliberate about *when* to use an LLM. With abundant AI access it's easy to delegate everything, but that's both slow and — ironically, given the project — wasteful. We kept pushing logic back into plain JS where we could (e.g. a DFS over the page DOM to extract text before any AI call), and only reached for LLMs where structured reasoning was actually needed.
-
-## What's next
-
-The open problem is giving sustainability scores to *every* product online in a way that's defensible. ESG plus our own research got us to a reasonable estimate, but there's no canonical metric here — the next step would be talking to people who work on this professionally and tightening the methodology before scaling further.
+A big part of creating this project was finding a way to make it actually marketable. A Chrome extension is by no means flashy. I needed to think of how to design a product that people would not just use but also enjoy and share with others. We accomplished this by gamifying the entire experience and creating a personal plant for users that grows or dies depending on their stash's average sustainability score. Additionally, this was my first time demoing a self-created project for others. I am proud of the improvements I made from demoing to other friends during the hackathon to the last judge.

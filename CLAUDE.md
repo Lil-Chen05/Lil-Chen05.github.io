@@ -1,28 +1,64 @@
-# CLAUDE.md — Project Rules for `lil-chen05.github.io`
+# CLAUDE.md
 
-This file is loaded by Claude Code in this repo. It is authoritative: anything here overrides default assistant behavior.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+This file is authoritative: anything here overrides default assistant behavior.
 
 ## What this project is
 
-A personal portfolio + digital hub for Jerry Chen (McGill CS). Static site built with **Astro + MDX**, styled with **Tailwind CSS**, hosted on **GitHub Pages**. Design reference: warm/editorial like joshwcomeau.com, timeline-organized like maggieappleton.com — **without** heavy animations or long-essay density.
+A personal portfolio + digital hub for Jerry Chen (McGill CS). Static site built with **Astro + MDX**, styled with **Tailwind CSS v4**, hosted on **GitHub Pages** at `https://lil-chen05.github.io`. Design reference: warm/editorial like joshwcomeau.com, timeline-organized like maggieappleton.com — **without** heavy animations or long-essay density. Design brief lives in `DESIGN.md`; day-1 scope in `docs/PRD.md`.
 
-## Authoring workflow (important)
+## Commands
 
-Jerry writes in plain text. The LLM's job is to convert that text into a valid `.mdx` file with correct frontmatter for the target content collection, then place it in the right folder. Preserve Jerry's voice — do not rewrite content into marketing copy.
+Node `>=22.12.0` required (see `package.json` engines).
+
+- `npm run dev` — local dev server at `localhost:4321`
+- `npm run build` — production build to `./dist/` (run this before asking Jerry to push)
+- `npm run preview` — serve the built site locally
+- `npm run astro check` — type-check Astro + content collection schemas (no dedicated test suite; this is the main correctness gate)
+- `npm run astro -- --help` — Astro CLI help
+
+There is no linter, test runner, or formatter configured. `astro check` is the de-facto verification step.
+
+## Architecture
+
+**Astro content collections** are the backbone. Four collections are declared in `src/content.config.ts` (note: root of `src/`, not `src/content/config.ts`) using the `glob` loader + Zod schemas:
+
+- `notes/` — `title`, `date`, `tags?`
+- `blog/` — `title`, `date`, `description`, `tags?`
+- `projects/` — `title`, `date`, `description`, `tags: ("swe"|"ai"|"nlp"|"school")[]`, `featured?`, `links?: { github?, demo?, devpost?, paper? }`
+- `courses/` — `code`, `title`, `term`, `rating?: 0–5`
+
+MDX files live under `src/content/<collection>/`. If you add a field, **update the Zod schema** in `src/content.config.ts` — otherwise the build fails. Page routes under `src/pages/<collection>/` query the collection with `getCollection()` and render via `PostLayout.astro` / collection-specific components.
+
+**Single layout.** `src/layouts/Layout.astro` wraps every page with `<Nav>` + `<main>` + `<Footer>`, sets SEO/OG meta, and contains the **anti-FOUC theme script** (inline `<script is:inline>` that sets `document.documentElement.dataset.theme` from `localStorage` or `prefers-color-scheme` before first paint). Accepts `title`, `description`, `noindex`, `wide` props. `wide` swaps `max-w-prose` for `max-w-5xl`.
+
+**Theming is CSS-variable driven, not `dark:` utilities.** Tokens (`--bg`, `--text`, `--accent`, `--border`, etc.) are defined in `src/styles/global.css`, exposed to Tailwind v4 via `@theme inline { --color-*: var(--*) }`, and swapped by `:root[data-theme="dark"]`. `ThemeToggle.astro` flips `data-theme` and persists to `localStorage`. **Do not add `dark:` classes** — add or adjust a CSS variable instead.
+
+**Tailwind v4** is wired via `@tailwindcss/vite` (see `astro.config.mjs`) and `@import "tailwindcss"` in `global.css`. There is **no `tailwind.config.*` file** — all theme config lives in the `@theme` block of `global.css`. (If older CLAUDE.md guidance references `tailwind.config.mjs`, treat the CSS `@theme` block as the equivalent.)
+
+**Integrations** (`astro.config.mjs`): `@astrojs/mdx`, `@astrojs/sitemap` (filter excludes `/blog` and `/life` from the sitemap).
+
+**Deployment.** Push to `main` → GitHub Actions (`.github/workflows/`) builds on Node 20 and deploys to GitHub Pages. Do **not** manually push to `gh-pages` or commit `dist/`. The Action owns deployment.
+
+**Misc.** `src/lib/activity.ts` + `plant.ts` back the `ActivityPlant.astro` homepage widget (content-derived activity signal, not GitHub contribution graph). `public/` holds static assets (favicon, OG image, photos).
+
+## Authoring workflow
+
+Jerry writes in plain text. The LLM's job is to convert that text into a valid `.mdx` file with correct frontmatter for the target collection, place it in the right folder, and **preserve Jerry's voice** — do not rewrite into marketing copy.
 
 ## Tailwind constraints (non-negotiable)
 
-1. **No utility soup.** If a `class` list exceeds ~6 utilities, or the same combination repeats in 2+ places, extract a component or an `@apply`-ed class.
-2. **Extract components for repeated patterns.** Examples: `NoteCard`, `ProjectCard`, `PostLayout`, `TagPill`.
+1. **No utility soup.** If a `class` list exceeds ~6 utilities, or the same combination repeats in 2+ places, extract a component or an `@apply`-ed class in `global.css`.
+2. **Extract components for repeated patterns.** Existing examples: `NoteEntry`, `ProjectCard`, `PostLayout`, `TagPill`.
 3. **Typography and spacing first.** No gratuitous gradients, drop shadows, glow, blur, glassmorphism, or decorative blobs. A border + well-chosen padding beats a shadow.
-4. **Theming via CSS variables**, defined in `src/styles/global.css` (e.g. `--color-bg`, `--color-text`, `--color-accent`). Do **not** sprinkle `dark:` utilities across components; map Tailwind tokens to the variables in `tailwind.config.mjs` and let them switch via a `data-theme` attribute or `.dark` class on `<html>`.
+4. **Theme via CSS variables only** (see Architecture). No `dark:` utilities.
 
 ## Component discipline
 
 - Do not create components prematurely.
-- Extract components only when a pattern is reused or clearly improves readability.
+- Extract only when a pattern is reused or clearly improves readability.
 - Prefer simple, readable markup over unnecessary abstraction.
-
 
 ## Forbidden portfolio clichés
 
@@ -42,37 +78,21 @@ Do not generate any of these without Jerry's explicit request:
 ## Code style
 
 - **Astro components** (`.astro`) for everything. Only introduce a client-side framework (React/Preact) if truly needed for interactivity — not for presentation.
-- **TypeScript** for `src/content/config.ts` and any `.ts` utilities. Use Zod schemas for content collection validation.
-- **File names:** PascalCase for components (`NoteCard.astro`), kebab-case for page routes and content files (`my-first-note.mdx`).
-- **Imports:** absolute via the `~` or `@` alias where configured; otherwise relative.
+- **TypeScript** for `src/content.config.ts` and any `.ts` utilities. Use Zod schemas for content-collection validation.
+- **File names:** PascalCase for components (`NoteEntry.astro`), kebab-case for page routes and content files (`my-first-note.mdx`).
 - **No default exports** in `.ts` utility files; named exports only.
-- **Client JS:** use `<script>` tags in Astro components with `is:inline` only when essential (e.g., the anti-FOUC theme script). Otherwise keep JS out.
-- **Accessibility:** every interactive element has a focus state; every image has meaningful `alt` text; headings form a valid outline.
-
-## Content collection frontmatter (MDX)
-
-Every content file starts with YAML frontmatter. Schemas are defined in `src/content/config.ts` — if you add a new field, update the schema.
-
-- **notes/**: `title`, `date` (ISO), `tags?: string[]`
-- **blog/**: `title`, `date`, `description`, `tags?: string[]`
-- **projects/**: `title`, `date`, `tags: ("swe"|"ai"|"nlp")[]`, `featured?: boolean`, `description`, `links?: { github?: string; demo?: string; paper?: string }`
-- **courses/**: `code`, `title`, `term`, `rating?: number`
+- **Client JS:** `<script is:inline>` only when essential (e.g., the anti-FOUC theme script). Otherwise keep JS out.
+- **Accessibility:** every interactive element has a focus state; every image has meaningful `alt`; headings form a valid outline.
 
 ## Commits
 
 - Conventional-ish, short, lower-case: `feat: add projects page`, `fix: theme toggle flash`, `content: add note on final exams`.
 - One logical change per commit. No "misc" dumps.
-- Never commit build output (`dist/`), `node_modules`, or `.env*`.
-
-## Deployment
-
-- Deployment is automatic: push to `main` → GitHub Actions builds with Node 20 → deploys to GitHub Pages.
-- Do not manually push to `gh-pages` or `docs/` for Pages. The Action owns deployment.
-- Before asking Jerry to push, always run `npm run build` locally and fix any errors.
+- Never commit `dist/`, `node_modules`, or `.env*`.
 
 ## Working with Jerry
 
-- Jerry's git/CLI comfort is a 2/5. Prefer explicit, copy-pasteable commands. Explain what each command does.
-- When suggesting UI choices, show the alternatives and recommend — don't just pick silently.
+- Jerry's git/CLI comfort is 2/5. Prefer explicit, copy-pasteable commands and explain what each does.
+- When suggesting UI choices, show alternatives and recommend — don't silently pick.
 - Match the editorial tone. If a design feels "AI slop"-ish, pare it back.
-- Don't expand scope. Day-1 scope is in `docs/PRD.md`; anything else is a later iteration.
+- Don't expand scope. Day-1 scope is `docs/PRD.md`; anything else is a later iteration.
