@@ -11,6 +11,13 @@ const links = [
 
 <nav class="border-b border-border">
   <div class="relative mx-auto flex max-w-prose items-center justify-center gap-5 px-6 py-5 font-sans text-sm">
+    <a
+      href="/"
+      aria-label="Home"
+      class="nav-monogram absolute left-6 top-1/2 -translate-y-1/2"
+    >
+      JC
+    </a>
     {
       links.map(({ href, label }) => (
         <a href={href} class="text-text no-underline hover:text-accent">
@@ -27,5 +34,17 @@ const links = [
 <style>
   nav a.no-underline {
     text-decoration: none;
+  }
+  .nav-monogram {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.12s ease;
+  }
+  .nav-monogram:hover {
+    color: var(--accent);
   }
 </style>
